@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Aja PMS — Operações (Print)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/tokens.css?v=3"/>
+<link rel="stylesheet" href="styles/shell.css?v=3"/>
+<link rel="stylesheet" href="styles/dashboard.css?v=3"/>
+<link rel="stylesheet" href="styles/components.css?v=3"/>
+<style>
+  /* Screen preview: light gray background so pages feel like sheets */
+  html, body { background: #e6e3df; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans, Inter, sans-serif); }
+
+  /* Each page is a landscape 16:9-ish sheet */
+  .print-page {
+    width: 1440px;
+    min-height: 900px;
+    background: var(--bg);
+    margin: 24px auto;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+    page-break-after: always;
+    break-after: page;
+    break-inside: avoid;
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    height: 900px;
+  }
+  .print-page:last-child { page-break-after: auto; break-after: auto; }
+
+  .print-page .sidebar {
+    height: 100%;
+  }
+  .print-page .main {
+    display: flex; flex-direction: column;
+    min-width: 0;
+    height: 900px;
+    overflow: hidden;
+  }
+  .print-page .content {
+    flex: 1; min-height: 0; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  /* Kill the fade-in so content is visible on first paint (PDF has no time) */
+  .print-page .page { animation: none !important; opacity: 1 !important; }
+
+  /* Page label strip */
+  .print-label {
+    position: absolute; top: 0; right: 0;
+    padding: 6px 14px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom-left-radius: 8px;
+    z-index: 50;
+    font-family: var(--font-sans, Inter, sans-serif);
+  }
+
+  /* Cover page */
+  .cover {
+    width: 1440px; height: 900px;
+    background: var(--bg);
+    margin: 24px auto;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+    page-break-after: always;
+    break-after: page;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 80px 96px;
+    box-sizing: border-box;
+    background:
+      radial-gradient(ellipse at 15% 85%, oklch(0.88 0.10 40 / 0.35), transparent 55%),
+      radial-gradient(ellipse at 85% 15%, oklch(0.88 0.09 70 / 0.30), transparent 55%),
+      oklch(0.97 0.02 50);
+  }
+  .cover::before {
+    content:''; position:absolute; inset:-10%;
+    background: repeating-linear-gradient(45deg, transparent 0 40px, oklch(0.60 0.10 40 / 0.04) 40px 41px);
+    pointer-events: none;
+  }
+  .cover-head {
+    display: flex; align-items: center; gap: 14px;
+    position: relative; z-index: 2;
+  }
+  .cover-mark {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: oklch(0.28 0.03 40);
+    display: flex; align-items: center; justify-content: center;
+    color: oklch(0.85 0.08 40);
+  }
+  .cover-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 112px; font-weight: 400; letter-spacing: -0.03em;
+    line-height: 1.02; color: oklch(0.25 0.04 40);
+    text-wrap: balance;
+    max-width: 1100px;
+    position: relative; z-index: 2;
+  }
+  .cover-title em {
+    font-style: italic; color: oklch(0.55 0.14 40);
+  }
+  .cover-sub {
+    font-family: Inter, sans-serif;
+    font-size: 20px; line-height: 1.5; color: oklch(0.40 0.06 40);
+    max-width: 640px;
+    position: relative; z-index: 2;
+  }
+  .cover-foot {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    position: relative; z-index: 2;
+    font-family: Inter, sans-serif;
+    font-size: 13px; color: oklch(0.40 0.04 40);
+  }
+  .cover-toc {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 40px;
+    max-width: 600px;
+  }
+  .cover-toc-item {
+    display: flex; gap: 10px; padding: 4px 0;
+    border-bottom: 1px dotted oklch(0.75 0.04 40 / 0.4);
+  }
+  .cover-toc-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: oklch(0.55 0.08 40); width: 22px; }
+  .cover-toc-name { flex: 1; font-weight: 500; color: oklch(0.28 0.04 40); }
+
+  /* Print: actual PDF output */
+  @page {
+    size: 1500px 940px;
+    margin: 0;
+  }
+  @media print {
+    html, body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .print-page, .cover {
+      margin: 0 !important;
+      box-shadow: none !important;
+      width: 1500px !important;
+      height: 940px !important;
+      min-height: 940px !important;
+      page-break-after: always;
+    }
+    .print-page .main, .print-page .content { height: 940px !important; }
+    .print-page { grid-template-columns: 60px 1fr !important; }
+
+    /* Never split a page */
+    .print-page, .cover { break-inside: avoid !important; }
+
+    /* Hide interactive/animated junk */
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* Intro marker */
+  #print-status {
+    position: fixed; top: 16px; right: 16px;
+    padding: 10px 14px; border-radius: 10px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid oklch(0.80 0.04 40);
+    font: 500 12px Inter;
+    color: oklch(0.30 0.08 40);
+    z-index: 9999; backdrop-filter: blur(4px);
+  }
+  @media print { #print-status { display: none !important; } }
+</style>
+</head>
+<body>
+<div id="print-status">Preparando impressão...</div>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="data/sample.js"></script>
+<script src="data/i18n.js"></script>
+
+<script type="text/babel" src="components/Icon.jsx"></script>
+<script type="text/babel" src="components/Atoms.jsx"></script>
+<script type="text/babel" src="components/Shell.jsx"></script>
+<script type="text/babel" src="components/Auth.jsx"></script>
+<script type="text/babel" src="components/Dashboard.jsx"></script>
+<script type="text/babel" src="components/Reservations.jsx"></script>
+<script type="text/babel" src="components/Calendar.jsx"></script>
+<script type="text/babel" src="components/Wizard.jsx"></script>
+<script type="text/babel" src="components/Stays.jsx"></script>
+<script type="text/babel" src="components/Pages.jsx"></script>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  const ROUTES = [
+    { id: 'dashboard', label: 'Visão Geral' },
+    { id: 'reservations', label: 'Reservas' },
+    { id: 'calendar', label: 'Calendário' },
+    { id: 'properties', label: 'Imóveis & Unidades' },
+    { id: 'stays', label: 'Estadias' },
+    { id: 'maintenance', label: 'Tarefas' },
+    { id: 'settings', label: 'Configurações' },
+  ];
+
+  const PrintPage = ({ route, index, label, lang, role, t, perms }) => {
+    const tenants = TENANTS;
+    const currentTenant = 'mar';
+    return (
+      <div className="print-page" data-route={route}>
+        <div className="print-label">{String(index+1).padStart(2,'0')} · {label}</div>
+        <Sidebar t={t} route={route} setRoute={()=>{}} role={role} perms={perms}/>
+        <div className="main">
+          <Topbar t={t} tenants={tenants} currentTenant={currentTenant}
+            setTenant={()=>{}} role={role} setRoute={()=>{}}
+            onNewRes={()=>{}} lang={lang} setLang={()=>{}}
+            theme={'light'} setTheme={()=>{}}/>
+          <main className="content">
+            {route === 'dashboard' && <Dashboard t={t} lang={lang} role={role} perms={perms} setRoute={()=>{}} onOpenRes={()=>{}}/>}
+            {route === 'reservations' && <Reservations t={t} lang={lang} perms={perms} onOpenRes={()=>{}} onNewRes={()=>{}}/>}
+            {route === 'calendar' && <Calendar t={t} lang={lang} onOpenRes={()=>{}}/>}
+            {route === 'properties' && <Properties t={t} lang={lang} perms={perms}/>}
+            {route === 'stays' && <StayOps t={t} lang={lang} onOpenRes={()=>{}}/>}
+            {route === 'maintenance' && <Maintenance t={t} lang={lang} perms={perms}/>}
+            {route === 'settings' && <Settings t={t} lang={lang} role={role} setRole={()=>{}}/>}
+          </main>
+        </div>
+      </div>
+    );
+  };
+
+  const Cover = () => (
+    <div className="cover">
+      <div className="cover-head">
+        <div className="cover-mark">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M4 20L12 4l8 16" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+            <path d="M8 14h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div style={{ fontFamily:'Inter', fontSize:13, fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:'oklch(0.45 0.08 40)' }}>Aja PMS</div>
+          <div style={{ fontFamily:'Inter', fontSize:12, color:'oklch(0.50 0.04 40)' }}>Operações de Propriedades &amp; Reservas</div>
+        </div>
+      </div>
+      <div>
+        <div style={{ fontFamily:'Inter', fontSize:13, fontWeight:500, letterSpacing:'.12em', textTransform:'uppercase', color:'oklch(0.48 0.10 40)', marginBottom:24 }}>
+          Protótipo · Walkthrough
+        </div>
+        <h1 className="cover-title">
+          Um sistema <em>multi-tenant</em> para operar propriedades, reservas e estadias.
+        </h1>
+        <div style={{ height: 28 }}/>
+        <div className="cover-sub">
+          Dashboard, reservas, calendário de disponibilidade, imóveis &amp; unidades, check-in/out, Kanban de tarefas e configurações — com RBAC por tenant e isolamento estrito.
+        </div>
+      </div>
+      <div className="cover-foot">
+        <div className="cover-toc">
+          {ROUTES.map((r,i) => (
+            <div key={r.id} className="cover-toc-item">
+              <div className="cover-toc-num">{String(i+1).padStart(2,'0')}</div>
+              <div className="cover-toc-name">{r.label}</div>
+            </div>
+          ))}
+        </div>
+        <div>
+          <div style={{ fontWeight:600, color:'oklch(0.30 0.06 40)' }}>Mar &amp; Sal Properties</div>
+          <div>24 unidades · Florianópolis</div>
+          <div style={{ marginTop: 6, opacity: 0.7 }}>18 abr 2026</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const PrintApp = () => {
+    const lang = 'pt';
+    const role = 'admin';
+    const t = useT(lang);
+    const perms = PERMISSIONS[role];
+
+    useEffect(() => {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.setAttribute('data-density', 'comfortable');
+    }, []);
+
+    return (
+      <div>
+        <Cover/>
+        {ROUTES.map((r, i) => (
+          <PrintPage key={r.id} route={r.id} index={i} label={r.label}
+            lang={lang} role={role} t={t} perms={perms}/>
+        ))}
+      </div>
+    );
+  };
+
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<PrintApp/>);
+
+  // Auto-print after fonts + Babel + render settle
+  window.addEventListener('load', async () => {
+    try {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+    } catch (e) {}
+    // Give React + Babel transforms time to mount all 7 routes
+    await new Promise(r => setTimeout(r, 1800));
+    const s = document.getElementById('print-status');
+    if (s) s.textContent = 'Abrindo diálogo de impressão...';
+    await new Promise(r => setTimeout(r, 500));
+    window.print();
+  });
+</script>
+</body>
+</html>

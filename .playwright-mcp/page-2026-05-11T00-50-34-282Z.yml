@@ -1,0 +1,55 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e10]:
+      - generic [ref=e12]:
+        - generic [ref=e13]: Passo 3 de 5
+        - heading "Conecte um imóvel" [level=1] [ref=e87]
+        - paragraph [ref=e88]: Comece com um — adicione os outros depois.
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - generic [ref=e91]: Nome do imóvel *
+            - textbox "Nome do imóvel *" [ref=e92]:
+              - /placeholder: "Ex.: Casa Mar & Sal — Jurerê"
+          - generic [ref=e93]:
+            - generic [ref=e94]: Tipo de propriedade *
+            - generic [ref=e95]:
+              - button "Casa" [ref=e96]
+              - button "Apartamento" [ref=e97]
+              - button "Prédio" [ref=e98]
+              - button "Hotel" [ref=e99]
+              - button "Pousada" [ref=e100]
+              - button "Chalé" [ref=e101]
+              - button "Flat" [ref=e102]
+          - generic [ref=e103]:
+            - generic [ref=e104]: Descrição *
+            - textbox "Descrição *" [ref=e105]:
+              - /placeholder: Conte brevemente sobre o imóvel — localização, diferenciais, perfil de hóspedes.
+          - generic [ref=e106]:
+            - generic [ref=e107]:
+              - generic [ref=e108]: Cidade *
+              - textbox "Cidade *" [ref=e109]: Florianópolis
+            - generic [ref=e110]:
+              - generic [ref=e111]: Estado *
+              - combobox "Estado *" [ref=e112]:
+                - option "UF" [selected]
+                - option "SC"
+                - option "SP"
+                - option "RJ"
+            - generic [ref=e113]:
+              - generic [ref=e114]: País *
+              - combobox "País *" [ref=e115]:
+                - option "Brasil" [selected]
+                - option "Portugal"
+          - link "› Adicionar endereço e geolocalização (opcional)" [ref=e116] [cursor=pointer]:
+            - /url: "#"
+      - img [ref=e117]
+    - generic [ref=e50]:
+      - button "Pular configuração" [ref=e51]
+      - generic [ref=e52]:
+        - button "← Voltar" [ref=e86]
+        - button "Continuar" [active] [ref=e53]:
+          - text: Continuar
+          - generic [ref=e54]: →
+  - button "Open Next.js Dev Tools" [ref=e60] [cursor=pointer]:
+    - img [ref=e61]
+  - alert [ref=e64]

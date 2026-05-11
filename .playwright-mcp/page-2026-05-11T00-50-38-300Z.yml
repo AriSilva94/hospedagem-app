@@ -1,0 +1,70 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e12]:
+      - generic [ref=e13]: Passo 4 de 5
+      - generic [ref=e127]:
+        - generic [ref=e128]:
+          - generic [ref=e129]: "1"
+          - heading "Grupo de unidades" [level=2] [ref=e130]
+        - generic [ref=e131]:
+          - generic [ref=e132]: Tipo *
+          - generic [ref=e133]:
+            - button "Quarto" [ref=e134]
+            - button "Apartamento" [ref=e135]
+            - button "Cobertura" [ref=e136]
+            - button "Loft" [ref=e137]
+            - button "Suíte" [ref=e138]
+            - button "Studio" [ref=e139]
+            - button "Bangalô" [ref=e140]
+        - generic [ref=e141]:
+          - generic [ref=e142]:
+            - generic [ref=e143]: Nome *
+            - textbox "Nome * Como aparecerá para o hóspede." [ref=e144]:
+              - /placeholder: "Ex.: Suíte Mar — vista jardim"
+            - generic [ref=e145]: Como aparecerá para o hóspede.
+          - generic [ref=e146]:
+            - generic [ref=e147]: Quantas iguais?
+            - textbox "Quantas iguais? Replicaremos com numeração." [ref=e148]: "4"
+            - generic [ref=e149]: Replicaremos com numeração.
+        - generic [ref=e150]:
+          - generic [ref=e151]: Descrição
+          - textbox "Descrição" [ref=e152]:
+            - /placeholder: O que torna essa unidade especial?
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - generic [ref=e155]: Andar
+            - textbox "Andar" [ref=e156]: 3º
+          - generic [ref=e157]:
+            - generic [ref=e158]: Capacidade
+            - textbox "Capacidade Hóspedes" [ref=e159]: "2"
+            - generic [ref=e160]: Hóspedes
+          - generic [ref=e161]:
+            - generic [ref=e162]: Quartos
+            - textbox "Quartos" [ref=e163]: "1"
+          - generic [ref=e164]:
+            - generic [ref=e165]: Tamanho
+            - textbox "Tamanho m²" [ref=e166]: "24"
+            - generic [ref=e167]: m²
+        - generic [ref=e168]:
+          - text: Comodidades
+          - generic [ref=e169]:
+            - button "✓ Wi-Fi" [ref=e170]
+            - button "✓ Ar-condicionado" [ref=e171]
+            - button "+ TV" [ref=e172]
+            - button "+ Cozinha" [ref=e173]
+            - button "+ Estacionamento" [ref=e174]
+            - button "+ Piscina" [ref=e175]
+            - button "+ Varanda" [ref=e176]
+            - button "+ Espaço de trabalho" [ref=e177]
+            - button "+ Máquina de lavar" [ref=e178]
+            - button "+ Aceita pets" [ref=e179]
+    - generic [ref=e50]:
+      - button "Pular configuração" [ref=e51]
+      - generic [ref=e52]:
+        - button "← Voltar" [ref=e86]
+        - button "Continuar" [active] [ref=e53]:
+          - text: Continuar
+          - generic [ref=e54]: →
+  - button "Open Next.js Dev Tools" [ref=e60] [cursor=pointer]:
+    - img [ref=e61]
+  - alert [ref=e64]

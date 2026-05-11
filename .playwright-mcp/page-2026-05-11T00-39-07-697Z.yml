@@ -1,0 +1,35 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]: Passo 1 de 6
+        - heading "Bem-vinda, Mariana." [level=1] [ref=e14]
+        - paragraph [ref=e15]: Vamos configurar sua operação em poucos minutos.
+        - list [ref=e16]:
+          - listitem [ref=e17]:
+            - img [ref=e19]
+            - generic [ref=e21]:
+              - generic [ref=e22]: Reservas e calendário unificados
+              - generic [ref=e23]: Tudo que você precisa em um só lugar
+          - listitem [ref=e24]:
+            - img [ref=e26]
+            - generic [ref=e28]:
+              - generic [ref=e29]: Equipe de limpeza e manutenção
+              - generic [ref=e30]: Atribua tarefas e acompanhe o progresso
+          - listitem [ref=e31]:
+            - img [ref=e33]
+            - generic [ref=e35]:
+              - generic [ref=e36]: Relatórios por imóvel e canal
+              - generic [ref=e37]: Receita, ocupação e tendências
+      - generic [ref=e38]:
+        - img [ref=e45]
+        - img [ref=e48]
+    - generic [ref=e50]:
+      - link "Pular configuração" [ref=e51] [cursor=pointer]:
+        - /url: /
+      - button "Continuar" [ref=e52]:
+        - text: Continuar
+        - generic [ref=e53]: →
+  - button "Open Next.js Dev Tools" [ref=e59] [cursor=pointer]:
+    - img [ref=e60]
+  - alert [ref=e63]
