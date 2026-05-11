@@ -36,16 +36,16 @@ const alerts = [
 export default function Dashboard() {
   return (
     <AppShell>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-4 p-4 sm:gap-6 sm:p-6">
         {/* Hero */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+          <div className="min-w-0">
             <p className="text-[12px] text-ink-3">Bom dia, Ana · sexta, 17 de abril</p>
-            <h1 className="mt-1 font-serif text-[28px] tracking-tight text-ink">
+            <h1 className="mt-1 font-serif text-xl tracking-tight text-ink sm:text-2xl lg:text-[28px]">
               Mar & Sal está <em className="not-italic text-accent">quase cheio</em> hoje.
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <PillButton icon={<DotIcon />}>Hoje</PillButton>
             <PillButton icon={<BuildingIcon />}>Todos imóveis</PillButton>
             <PillButton icon={<ExportIcon />}>Exportar</PillButton>
@@ -77,7 +77,7 @@ export default function Dashboard() {
         {/* Timeline + Alerts */}
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.7fr_1fr]">
           <section className="rounded-2xl border border-line bg-bg-card shadow-sm">
-            <header className="flex items-center justify-between border-b border-line px-5 py-4">
+            <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-5 sm:py-4">
               <div>
                 <h2 className="text-[15px] font-semibold text-ink">Linha do tempo — hoje</h2>
                 <p className="text-[12px] text-ink-3">Chegadas, partidas e tarefas de hoje</p>
@@ -88,16 +88,16 @@ export default function Dashboard() {
             </header>
             <ul className="divide-y divide-line">
               {events.map((e, i) => (
-                <li key={i} className="flex items-center gap-4 px-5 py-3 hover:bg-panel">
-                  <span className="w-12 text-[12px] font-medium text-ink-3 tabular-nums">{e.time}</span>
+                <li key={i} className="flex items-center gap-3 px-3 py-3 hover:bg-panel sm:gap-4 sm:px-5">
+                  <span className="w-10 shrink-0 text-[12px] font-medium text-ink-3 tabular-nums sm:w-12">{e.time}</span>
                   <KindBadge kind={e.kind} />
-                  <div className="flex flex-1 flex-col">
-                    <span className="text-[13.5px] font-medium text-ink">{e.title}</span>
-                    <span className="text-[12px] text-ink-3">{e.meta}</span>
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-[13.5px] font-medium text-ink">{e.title}</span>
+                    <span className="truncate text-[12px] text-ink-3">{e.meta}</span>
                   </div>
                   {e.status && (
                     <span className={cn(
-                      "rounded-full px-2.5 py-0.5 text-[11px] font-medium",
+                      "shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium",
                       e.status.tone === "warn"
                         ? "bg-warn-soft text-warn-ink"
                         : "bg-slate-soft text-slate-ink"
@@ -105,14 +105,14 @@ export default function Dashboard() {
                       {e.status.label}
                     </span>
                   )}
-                  <ChevronRight />
+                  <span className="hidden sm:block"><ChevronRight /></span>
                 </li>
               ))}
             </ul>
           </section>
 
           <section className="rounded-2xl border border-line bg-bg-card shadow-sm">
-            <header className="flex items-center justify-between border-b border-line px-5 py-4">
+            <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-5 sm:py-4">
               <h2 className="text-[15px] font-semibold text-ink">Alertas</h2>
               <span className="grid h-6 w-6 place-items-center rounded-full bg-err-soft text-[11px] font-semibold text-err-ink">
                 {alerts.length}
@@ -120,11 +120,11 @@ export default function Dashboard() {
             </header>
             <ul className="divide-y divide-line">
               {alerts.map((a) => (
-                <li key={a.title} className="flex items-start gap-3 px-5 py-4">
+                <li key={a.title} className="flex items-start gap-3 px-4 py-3 sm:px-5 sm:py-4">
                   <span className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-warn-soft text-warn-ink">
                     <WarnIcon />
                   </span>
-                  <div className="flex flex-1 flex-col">
+                  <div className="flex min-w-0 flex-1 flex-col">
                     <span className="text-[13.5px] font-semibold text-ink">{a.title}</span>
                     <span className="text-[12px] text-ink-3">{a.desc}</span>
                   </div>
@@ -159,7 +159,7 @@ function KindBadge({ kind }: { kind: Event["kind"] }) {
   };
   return (
     <span className={cn(
-      "w-24 shrink-0 rounded-md px-2 py-1 text-center text-[10.5px] font-semibold uppercase tracking-wider",
+      "w-20 shrink-0 rounded-md px-2 py-1 text-center text-[10.5px] font-semibold uppercase tracking-wider sm:w-24",
       palette[kind]
     )}>
       {kind}
