@@ -1,18 +1,31 @@
-export function TopBar() {
+type TopBarProps = {
+  onOpenMenu: () => void;
+};
+
+export function TopBar({ onOpenMenu }: TopBarProps) {
   return (
-    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-line bg-bg px-5">
-      <button className="flex items-center gap-3 rounded-full border border-line bg-bg-card py-1.5 pl-1.5 pr-3 text-left text-[13px] hover:bg-panel">
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-accent text-[12.5px] font-semibold text-white">
-          M
-        </span>
-        <span className="flex flex-col leading-tight">
-          <span className="text-[13px] font-semibold text-ink">Mar & Sal Properties</span>
-          <span className="text-[11px] text-ink-3">24 unidades · Florianópolis</span>
-        </span>
-        <span className="ml-1 text-ink-3"><ChevronDown /></span>
+    <header className="flex h-16 shrink-0 items-center gap-2 border-b border-line bg-bg px-3 sm:gap-4 sm:px-5">
+      <button
+        type="button"
+        onClick={onOpenMenu}
+        aria-label="Abrir menu"
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-md text-ink-2 hover:bg-panel hover:text-ink md:hidden"
+      >
+        <MenuIcon />
       </button>
 
-      <div className="relative mx-auto w-full max-w-[480px]">
+      <button className="flex min-w-0 items-center gap-2 rounded-full border border-line bg-bg-card py-1.5 pl-1.5 pr-3 text-left text-[13px] hover:bg-panel sm:gap-3">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-accent text-[12.5px] font-semibold text-white">
+          M
+        </span>
+        <span className="hidden min-w-0 flex-col leading-tight sm:flex">
+          <span className="truncate text-[13px] font-semibold text-ink">Mar & Sal Properties</span>
+          <span className="truncate text-[11px] text-ink-3">24 unidades · Florianópolis</span>
+        </span>
+        <span className="ml-1 shrink-0 text-ink-3"><ChevronDown /></span>
+      </button>
+
+      <div className="relative mx-auto hidden w-full max-w-[480px] lg:block">
         <SearchIcon />
         <input
           type="text"
@@ -24,16 +37,17 @@ export function TopBar() {
         </kbd>
       </div>
 
-      <div className="flex items-center gap-2">
-        <button className="rounded-md px-2 py-1 text-[12px] font-medium text-ink-2 hover:bg-panel">
+      <div className="ml-auto flex items-center gap-1 sm:gap-2 lg:ml-0">
+        <button className="hidden rounded-md px-2 py-1 text-[12px] font-medium text-ink-2 hover:bg-panel sm:inline-flex">
           PT
         </button>
-        <IconButton><MoonIcon /></IconButton>
+        <IconButton className="hidden sm:grid"><MoonIcon /></IconButton>
         <IconButton><BellIcon /></IconButton>
-        <button className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-4 text-[13px] font-medium text-white hover:bg-accent-hover">
-          <PlusIcon /> Nova reserva
+        <button className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-3 text-[13px] font-medium text-white hover:bg-accent-hover md:px-4">
+          <PlusIcon />
+          <span className="hidden md:inline">Nova reserva</span>
         </button>
-        <div className="grid h-9 w-9 place-items-center rounded-full bg-accent-ink text-[12px] font-semibold text-white">
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-ink text-[12px] font-semibold text-white">
           AO
         </div>
       </div>
@@ -41,14 +55,21 @@ export function TopBar() {
   );
 }
 
-function IconButton({ children }: { children: React.ReactNode }) {
+function IconButton({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <button className="grid h-9 w-9 place-items-center rounded-md text-ink-2 hover:bg-panel hover:text-ink">
+    <button className={`grid h-9 w-9 place-items-center rounded-md text-ink-2 hover:bg-panel hover:text-ink ${className}`}>
       {children}
     </button>
   );
 }
 
+function MenuIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" />
+    </svg>
+  );
+}
 function ChevronDown() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
