@@ -6,11 +6,11 @@ import { cn } from "@/lib/cn";
 
 const items = [
   { href: "/dashboard", label: "Painel", icon: HomeIcon },
-  { href: "/reservas", label: "Reservas", icon: ListIcon },
-  { href: "/calendario", label: "Calendário", icon: CalendarIcon },
+  // { href: "/reservas", label: "Reservas", icon: ListIcon },
+  // { href: "/calendario", label: "Calendário", icon: CalendarIcon },
   { href: "/imoveis", label: "Imóveis", icon: BuildingIcon },
-  { href: "/equipe", label: "Equipe", icon: UsersIcon },
-  { href: "/relatorios", label: "Relatórios", icon: ChartIcon },
+  // { href: "/equipe", label: "Equipe", icon: UsersIcon },
+  // { href: "/relatorios", label: "Relatórios", icon: ChartIcon },
 ];
 
 export function Sidebar() {
@@ -53,6 +53,15 @@ function HomeIcon() {
     </svg>
   );
 }
+function BuildingIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="4" y="3" width="16" height="18" rx="1.5" /><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="12" y1="3" x2="12" y2="21" />
+    </svg>
+  );
+}
+
+/* Reservado para futuros fluxos — descomentar quando as rotas existirem
 function ListIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -65,13 +74,6 @@ function CalendarIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <rect x="3.5" y="5" width="17" height="15" rx="2" /><line x1="3.5" y1="10" x2="20.5" y2="10" /><line x1="8" y1="3" x2="8" y2="7" /><line x1="16" y1="3" x2="16" y2="7" />
-    </svg>
-  );
-}
-function BuildingIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="4" y="3" width="16" height="18" rx="1.5" /><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="12" y1="3" x2="12" y2="21" />
     </svg>
   );
 }
@@ -89,3 +91,4 @@ function ChartIcon() {
     </svg>
   );
 }
+*/
