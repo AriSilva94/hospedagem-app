@@ -116,10 +116,10 @@ export default function ImoveisPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="font-serif text-[26px] tracking-tight text-ink">
+      <div className="flex flex-col gap-4 p-4 sm:gap-6 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+          <div className="min-w-0">
+            <h1 className="font-serif text-xl tracking-tight text-ink sm:text-[26px]">
               Imóveis <span className="text-ink-3">6 · 15 unidades</span>
             </h1>
             <p className="mt-1 text-[13px] text-ink-3">
@@ -134,7 +134,7 @@ export default function ImoveisPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {properties.map((p) => (
             <button
               type="button"
@@ -142,7 +142,7 @@ export default function ImoveisPage() {
               onClick={() => setEditing(p)}
               className="overflow-hidden rounded-2xl border border-line bg-bg-card text-left shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
-              <div className={`relative grid h-[110px] place-items-center ${p.cor}`}>
+              <div className={`relative grid h-[90px] place-items-center sm:h-[110px] ${p.cor}`}>
                 {p.offline && (
                   <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-bg-card/90 px-2 py-0.5 text-[11px] font-medium text-accent-ink">
                     <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Fora de operação

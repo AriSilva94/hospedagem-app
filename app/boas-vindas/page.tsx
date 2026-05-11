@@ -23,10 +23,10 @@ export default function BoasVindas() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-bg p-4 lg:p-8">
-      <div className="mx-auto flex w-full max-w-[1240px] min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-line bg-bg-card shadow-md">
+    <div className="flex min-h-screen flex-col bg-bg p-3 sm:p-4 lg:p-8">
+      <div className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col overflow-hidden rounded-2xl border border-line bg-bg-card shadow-md sm:rounded-3xl">
         {/* Progress */}
-        <div className="flex gap-1.5 px-8 pt-4">
+        <div className="flex gap-1.5 px-4 pt-3 sm:px-8 sm:pt-4">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => {
             const idx = i + 1;
             return (
@@ -44,8 +44,8 @@ export default function BoasVindas() {
         </div>
 
         {/* Content */}
-        <div className="grid h-0 flex-1 grid-cols-1 lg:grid-cols-2">
-          <div className="flex flex-col overflow-y-auto px-10 py-12 lg:px-16">
+        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2">
+          <div className="flex flex-col overflow-y-auto px-5 py-8 sm:px-10 sm:py-12 lg:px-16">
             <div className="my-auto w-full">
               <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-ink-3">
                 Passo {step} de {TOTAL_STEPS}
@@ -60,7 +60,7 @@ export default function BoasVindas() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-line px-8 py-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-4 sm:px-8 sm:py-5">
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
@@ -69,7 +69,7 @@ export default function BoasVindas() {
             Pular configuração
           </button>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-4 sm:gap-5">
             {step > 1 && (
               <button
                 type="button"
@@ -82,7 +82,7 @@ export default function BoasVindas() {
             <button
               type="button"
               onClick={next}
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-6 text-[14.5px] font-medium text-white shadow-sm hover:bg-accent-hover"
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-[14px] font-medium text-white shadow-sm hover:bg-accent-hover sm:px-6 sm:text-[14.5px]"
             >
               {step === TOTAL_STEPS ? "Abrir painel" : "Continuar"}{" "}
               <span aria-hidden>→</span>
@@ -147,7 +147,7 @@ function StepWelcome() {
   ];
   return (
     <>
-      <h1 className="mt-4 font-serif text-5xl leading-[1.05] tracking-tight text-ink">
+      <h1 className="mt-4 font-serif text-3xl leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.05]">
         Bem-vinda, Mariana.
       </h1>
       <p className="mt-3 text-[15px] text-ink-3">
@@ -176,7 +176,7 @@ function StepProfile() {
   const [idioma, setIdioma] = useState("pt-BR");
   return (
     <>
-      <h1 className="mt-4 font-serif text-5xl leading-[1.05] tracking-tight text-ink">
+      <h1 className="mt-4 font-serif text-3xl leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.05]">
         Seu perfil
       </h1>
       <p className="mt-3 text-[15px] text-ink-3">
@@ -223,7 +223,7 @@ function StepProperty() {
   const [cidade, setCidade] = useState("Florianópolis");
   return (
     <>
-      <h1 className="mt-4 font-serif text-5xl leading-[1.05] tracking-tight text-ink">
+      <h1 className="mt-4 font-serif text-3xl leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.05]">
         Conecte um imóvel
       </h1>
       <p className="mt-3 text-[15px] text-ink-3">
@@ -272,7 +272,7 @@ function StepProperty() {
           />
         </FieldLabel>
 
-        <div className="grid grid-cols-[2fr_1fr_1fr] gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr_1fr]">
           <FieldLabel label="Cidade" required>
             <TextInput value={cidade} onChange={setCidade} />
           </FieldLabel>
@@ -337,7 +337,7 @@ function StepUnits() {
         </div>
       </div>
 
-      <div className="mt-3 grid grid-cols-[2fr_1fr] gap-2.5">
+      <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-[2fr_1fr]">
         <label className="flex flex-col gap-1">
           <CompactLabel required>Nome</CompactLabel>
           <input className={inputCls} placeholder="Ex.: Suíte Mar — vista jardim" />
@@ -357,7 +357,7 @@ function StepUnits() {
         />
       </label>
 
-      <div className="mt-2.5 grid grid-cols-4 gap-2.5">
+      <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
         <label className="flex flex-col gap-1"><CompactLabel>Andar</CompactLabel><input className={inputCls} defaultValue="3º" /></label>
         <label className="flex flex-col gap-1"><CompactLabel>Capacidade</CompactLabel><input className={inputCls} defaultValue="2" /></label>
         <label className="flex flex-col gap-1"><CompactLabel>Quartos</CompactLabel><input className={inputCls} defaultValue="1" /></label>
@@ -402,7 +402,7 @@ function CompactLabel({ children, required }: { children: React.ReactNode; requi
 function StepDone() {
   return (
     <>
-      <h1 className="mt-4 font-serif text-5xl leading-[1.05] tracking-tight text-ink">
+      <h1 className="mt-4 font-serif text-3xl leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.05]">
         Pronto para começar.
       </h1>
       <p className="mt-3 text-[15px] text-ink-3">

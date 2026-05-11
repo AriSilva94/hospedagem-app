@@ -1,48 +1,150 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 
 const items = [
   { href: "/dashboard", label: "Painel", icon: HomeIcon },
-  // { href: "/reservas", label: "Reservas", icon: ListIcon },
-  // { href: "/calendario", label: "Calendário", icon: CalendarIcon },
   { href: "/imoveis", label: "Imóveis", icon: BuildingIcon },
-  // { href: "/equipe", label: "Equipe", icon: UsersIcon },
-  // { href: "/relatorios", label: "Relatórios", icon: ChartIcon },
 ];
 
-export function Sidebar() {
+type SidebarProps = {
+  mobileNavOpen: boolean;
+  onClose: () => void;
+};
+
+export function Sidebar({ mobileNavOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileNavOpen, onClose]);
+
+  useEffect(() => {
+    if (mobileNavOpen) {
+      previousActiveElement.current = document.activeElement as HTMLElement | null;
+      closeButtonRef.current?.focus();
+    } else {
+      const previous = previousActiveElement.current;
+      if (previous && document.contains(previous)) {
+        previous.focus();
+      }
+    }
+  }, [mobileNavOpen]);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileNavOpen]);
+
+  useEffect(() => {
+    if (mobileNavOpen) onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   return (
-    <aside className="flex w-14 shrink-0 flex-col items-center gap-1 bg-ink py-4">
-      <Link
-        href="/dashboard"
-        className="mb-3 grid h-9 w-9 place-items-center rounded-xl bg-accent font-semibold text-white"
+    <>
+      {/* Desktop rail */}
+      <aside className="hidden w-14 shrink-0 flex-col items-center gap-1 bg-ink py-4 md:flex">
+        <Link
+          href="/dashboard"
+          className="mb-3 grid h-9 w-9 place-items-center rounded-xl bg-accent font-semibold text-white"
+        >
+          A
+        </Link>
+        {items.map((item) => {
+          const active = pathname?.startsWith(item.href);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              title={item.label}
+              className={cn(
+                "grid h-9 w-9 place-items-center rounded-lg transition-colors",
+                active
+                  ? "bg-white/10 text-white"
+                  : "text-white/55 hover:bg-white/5 hover:text-white"
+              )}
+            >
+              <Icon />
+            </Link>
+          );
+        })}
+      </aside>
+
+      {/* Mobile drawer */}
+      <div
+        className={cn(
+          "fixed inset-0 z-40 bg-ink/40 transition-opacity md:hidden",
+          mobileNavOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        )}
+        onClick={onClose}
+        aria-hidden
+      />
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-ink py-4 transition-transform md:hidden",
+          mobileNavOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+        aria-hidden={!mobileNavOpen}
       >
-        A
-      </Link>
-      {items.map((item) => {
-        const active = pathname?.startsWith(item.href);
-        const Icon = item.icon;
-        return (
+        <div className="flex items-center justify-between px-4 pb-4">
           <Link
-            key={item.href}
-            href={item.href}
-            title={item.label}
-            className={cn(
-              "grid h-9 w-9 place-items-center rounded-lg transition-colors",
-              active
-                ? "bg-white/10 text-white"
-                : "text-white/55 hover:bg-white/5 hover:text-white"
-            )}
+            href="/dashboard"
+            onClick={onClose}
+            className="flex items-center gap-2 text-white"
           >
-            <Icon />
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent font-semibold">
+              A
+            </span>
+            <span className="font-serif text-[18px]">Aja</span>
           </Link>
-        );
-      })}
-    </aside>
+          <button
+            ref={closeButtonRef}
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar menu"
+            className="grid h-8 w-8 place-items-center rounded-md text-white/70 hover:bg-white/5 hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
+        <nav className="flex flex-col gap-1 px-2">
+          {items.map((item) => {
+            const active = pathname?.startsWith(item.href);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-[14px] transition-colors",
+                  active
+                    ? "bg-white/10 text-white"
+                    : "text-white/65 hover:bg-white/5 hover:text-white"
+                )}
+              >
+                <Icon />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+    </>
   );
 }
 
@@ -60,35 +162,3 @@ function BuildingIcon() {
     </svg>
   );
 }
-
-/* Reservado para futuros fluxos — descomentar quando as rotas existirem
-function ListIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <line x1="6" y1="6" x2="20" y2="6" /><line x1="6" y1="12" x2="20" y2="12" /><line x1="6" y1="18" x2="20" y2="18" />
-      <circle cx="3.5" cy="6" r="1" fill="currentColor" /><circle cx="3.5" cy="12" r="1" fill="currentColor" /><circle cx="3.5" cy="18" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-function CalendarIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="3.5" y="5" width="17" height="15" rx="2" /><line x1="3.5" y1="10" x2="20.5" y2="10" /><line x1="8" y1="3" x2="8" y2="7" /><line x1="16" y1="3" x2="16" y2="7" />
-    </svg>
-  );
-}
-function UsersIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <circle cx="9" cy="9" r="3.5" /><path d="M3 20c0-3 2.7-5 6-5s6 2 6 5" /><circle cx="17" cy="8" r="2.5" /><path d="M15 14c2.5 0 5 1.7 5 4" />
-    </svg>
-  );
-}
-function ChartIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <line x1="4" y1="20" x2="20" y2="20" /><rect x="6" y="11" width="3" height="7" /><rect x="11" y="7" width="3" height="11" /><rect x="16" y="14" width="3" height="4" />
-    </svg>
-  );
-}
-*/
