@@ -128,7 +128,7 @@ export function NovoImovelModal({
         onClick={onClose}
       />
 
-      <div className="relative z-10 flex max-h-[95vh] w-full max-w-[620px] flex-col overflow-hidden rounded-2xl bg-bg-card shadow-lg sm:max-h-[90vh]">
+      <div className="relative z-10 flex max-h-[95vh] w-full max-w-[95vw] flex-col overflow-hidden rounded-2xl bg-bg-card shadow-lg sm:max-h-[90vh] sm:max-w-[620px]">
         <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-3">
             <span className={cn("grid h-10 w-10 place-items-center rounded-xl", data.cor)}>
