@@ -39,6 +39,20 @@ export function Sidebar({ mobileNavOpen, onClose }: SidebarProps) {
     }
   }, [mobileNavOpen]);
 
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileNavOpen]);
+
+  useEffect(() => {
+    if (mobileNavOpen) onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   return (
     <>
       {/* Desktop rail */}
