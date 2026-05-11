@@ -29,7 +29,7 @@ export default function Home() {
     <div className="flex flex-1 flex-col bg-bg">
       <Header />
 
-      <main className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-12 px-6 py-16 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-10 lg:py-24">
+      <main className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-8 px-4 py-10 sm:gap-12 sm:px-6 sm:py-16 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-10 lg:py-24">
         {/* Hero */}
         <section className="flex flex-col justify-center">
           <div className="flex items-center gap-3">
@@ -39,17 +39,17 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="mt-6 font-serif text-[64px] leading-[1.05] tracking-tight text-ink">
+          <h1 className="mt-6 font-serif text-[40px] leading-[1.1] tracking-tight text-ink sm:text-[52px] lg:text-[64px] lg:leading-[1.05]">
             A operação{" "}
             <span className="italic text-accent">se cuida.</span> Você recebe.
           </h1>
 
-          <p className="mt-6 max-w-lg text-[17px] leading-[1.55] text-ink-2">
+          <p className="mt-5 max-w-lg text-[15px] leading-[1.55] text-ink-2 sm:mt-6 sm:text-[17px]">
             Da chave ao check-out, tudo orquestrado. Aja é o sistema operacional
             dos anfitriões que tratam hospedar como ofício.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-5">
+          <div className="mt-6 flex flex-wrap items-center gap-4 sm:mt-8 sm:gap-5">
             <button className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-accent-hover">
               Comece grátis <span aria-hidden>→</span>
             </button>
@@ -60,7 +60,7 @@ export default function Home() {
 
           <div className="mt-10 h-px w-full max-w-xl bg-line" />
 
-          <dl className="mt-8 flex flex-wrap gap-10">
+          <dl className="mt-8 flex flex-wrap gap-6 sm:gap-10">
             <Stat value="2.400+" label="imóveis ativos" />
             <Stat value="38%" label="de ocupação extra" />
             <Stat value="7 dias" label="para sair do papel" />
@@ -69,7 +69,7 @@ export default function Home() {
 
         {/* Auth card */}
         <section className="flex items-start justify-center lg:justify-end">
-          <div className="w-full max-w-md rounded-3xl border border-line bg-bg-card p-7 shadow-lg">
+          <div className="w-full max-w-md rounded-2xl border border-line bg-bg-card p-5 shadow-lg sm:rounded-3xl sm:p-7">
             {/* Tabs */}
             <div className="flex rounded-full bg-accent-soft p-1">
               <TabButton active={tab === "signup"} onClick={() => setTab("signup")}>
@@ -174,7 +174,7 @@ export default function Home() {
 
 function Header() {
   return (
-    <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
+    <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
       <a href="#" className="flex items-center gap-2">
         <span className="grid h-8 w-8 place-items-center rounded-full bg-accent text-[15px] font-semibold text-white">
           A
@@ -189,7 +189,7 @@ function Header() {
         <a href="#" className="hover:text-ink">Contato</a>
       </nav>
 
-      <button className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-5 text-[14px] font-medium text-bg-card hover:bg-ink-2">
+      <button className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-4 text-[13px] font-medium text-bg-card hover:bg-ink-2 sm:px-5 sm:text-[14px]">
         Entrar <span aria-hidden>→</span>
       </button>
     </header>
@@ -199,7 +199,7 @@ function Header() {
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex flex-col">
-      <span className="font-serif text-[30px] leading-none text-accent">{value}</span>
+      <span className="font-serif text-[26px] leading-none text-accent sm:text-[30px]">{value}</span>
       <span className="mt-2 text-[13px] text-ink-3">{label}</span>
     </div>
   );
