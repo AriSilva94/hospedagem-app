@@ -120,7 +120,7 @@ export function NovoImovelModal({
   const headerName = data.nome.trim() || (mode === "edit" ? "Imóvel" : "Novo imóvel");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       <button
         type="button"
         aria-label="Fechar overlay"
@@ -128,8 +128,8 @@ export function NovoImovelModal({
         onClick={onClose}
       />
 
-      <div className="relative z-10 flex max-h-[90vh] w-full max-w-[620px] flex-col overflow-hidden rounded-2xl bg-bg-card shadow-lg">
-        <header className="flex items-start justify-between gap-3 border-b border-line px-6 py-4">
+      <div className="relative z-10 flex max-h-[95vh] w-full max-w-[620px] flex-col overflow-hidden rounded-2xl bg-bg-card shadow-lg sm:max-h-[90vh]">
+        <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-3">
             <span className={cn("grid h-10 w-10 place-items-center rounded-xl", data.cor)}>
               <BuildingIcon />
@@ -152,7 +152,7 @@ export function NovoImovelModal({
 
         <StepBar step={step} />
 
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
           {step === 1 && <StepIdentificacao data={data} set={set} />}
           {step === 2 && <StepEndereco data={data} set={set} />}
           {step === 3 && (
@@ -178,7 +178,7 @@ export function NovoImovelModal({
 
 function StepBar({ step }: { step: number }) {
   return (
-    <div className="flex gap-1 px-6 pt-3">
+    <div className="flex gap-1 px-4 pt-3 sm:px-6">
       {[1, 2, 3].map((i) => (
         <span
           key={i}
@@ -225,26 +225,26 @@ function Footer({
       : "Continuar ›";
 
   return (
-    <footer className="flex items-center justify-between gap-3 border-t border-line px-6 py-3">
-      <span className="text-[12px] text-ink-3">{hint}</span>
-      <div className="flex items-center gap-2">
+    <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-4 py-3 sm:px-6">
+      <span className="hidden text-[12px] text-ink-3 sm:inline">{hint}</span>
+      <div className="ml-auto flex items-center gap-2">
         {step > 1 && (
           <button
             onClick={onBack}
-            className="inline-flex h-9 items-center rounded-full px-4 text-[13px] font-medium text-ink-2 hover:bg-panel"
+            className="inline-flex h-9 items-center rounded-full px-3 text-[13px] font-medium text-ink-2 hover:bg-panel sm:px-4"
           >
             Voltar
           </button>
         )}
         <button
           onClick={onCancel}
-          className="inline-flex h-9 items-center rounded-full border border-line-strong bg-bg-card px-4 text-[13px] font-medium text-ink hover:bg-panel"
+          className="hidden h-9 items-center rounded-full border border-line-strong bg-bg-card px-4 text-[13px] font-medium text-ink hover:bg-panel sm:inline-flex"
         >
           Cancelar
         </button>
         <button
           onClick={onNext}
-          className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-5 text-[13px] font-medium text-white hover:bg-accent-hover"
+          className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-4 text-[13px] font-medium text-white hover:bg-accent-hover sm:px-5"
         >
           {primaryLabel}
         </button>
@@ -277,7 +277,7 @@ function StepIdentificacao({
 
       <div>
         <Label required>Tipo do imóvel</Label>
-        <div className="mt-2 grid grid-cols-2 gap-2">
+        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {TIPOS.map((t) => (
             <button
               key={t.id}
@@ -362,10 +362,12 @@ function StepEndereco({
         />
       </Field>
 
-      <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-3">
-        <Field label="Cidade" required>
-          <Input value={data.cidade ?? ""} onChange={(v) => set("cidade", v)} placeholder="Florianópolis" />
-        </Field>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1.6fr_1fr_1fr]">
+        <div className="col-span-2 sm:col-span-1">
+          <Field label="Cidade" required>
+            <Input value={data.cidade ?? ""} onChange={(v) => set("cidade", v)} placeholder="Florianópolis" />
+          </Field>
+        </div>
         <Field label="Estado / UF" required>
           <Input value={data.uf ?? ""} onChange={(v) => set("uf", v)} placeholder="SC" />
         </Field>
@@ -453,11 +455,11 @@ function StepUnidades({
             key={i}
             className="relative rounded-xl border border-line-strong bg-bg-card p-4"
           >
-            <span className="absolute -left-2 top-3 inline-flex h-6 w-8 items-center justify-center rounded-md bg-accent text-[11px] font-semibold text-white">
+            <span className="absolute -left-1 top-3 inline-flex h-6 w-8 items-center justify-center rounded-md bg-accent text-[11px] font-semibold text-white sm:-left-2">
               +{u.quantidade}
             </span>
 
-            <div className="grid grid-cols-[1.6fr_1fr_0.8fr] gap-3 pl-6">
+            <div className="grid grid-cols-1 gap-3 pl-4 sm:grid-cols-[1.6fr_1fr_0.8fr] sm:pl-6">
               <Field label="Nome do tipo" required>
                 <Input value={u.nome} onChange={(v) => update(i, { nome: v })} placeholder="Apto Standard" />
               </Field>
@@ -481,7 +483,7 @@ function StepUnidades({
               </Field>
             </div>
 
-            <div className="mt-3 pl-6">
+            <div className="mt-3 pl-4 sm:pl-6">
               <Field label="Descrição" required>
                 <textarea
                   value={u.descricao}
@@ -493,7 +495,7 @@ function StepUnidades({
               </Field>
             </div>
 
-            <div className="mt-3 grid grid-cols-[0.8fr_0.9fr_1.1fr_0.8fr_1fr] gap-2 pl-6">
+            <div className="mt-3 grid grid-cols-2 gap-2 pl-4 sm:grid-cols-3 sm:pl-6 lg:grid-cols-5">
               <Field label="Andar"><Input value={u.andar} onChange={(v) => update(i, { andar: v })} /></Field>
               <Field label="Quartos" required><Input type="number" value={String(u.quartos)} onChange={(v) => update(i, { quartos: Number(v) || 0 })} /></Field>
               <Field label="Capacidade" required><Input type="number" value={String(u.capacidade)} onChange={(v) => update(i, { capacidade: Number(v) || 0 })} /></Field>
