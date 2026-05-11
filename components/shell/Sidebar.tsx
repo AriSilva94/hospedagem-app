@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
@@ -17,6 +17,8 @@ type SidebarProps = {
 
 export function Sidebar({ mobileNavOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!mobileNavOpen) return;
@@ -24,6 +26,18 @@ export function Sidebar({ mobileNavOpen, onClose }: SidebarProps) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [mobileNavOpen, onClose]);
+
+  useEffect(() => {
+    if (mobileNavOpen) {
+      previousActiveElement.current = document.activeElement as HTMLElement | null;
+      closeButtonRef.current?.focus();
+    } else {
+      const previous = previousActiveElement.current;
+      if (previous && document.contains(previous)) {
+        previous.focus();
+      }
+    }
+  }, [mobileNavOpen]);
 
   return (
     <>
@@ -84,6 +98,7 @@ export function Sidebar({ mobileNavOpen, onClose }: SidebarProps) {
             <span className="font-serif text-[18px]">Aja</span>
           </Link>
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
             aria-label="Fechar menu"

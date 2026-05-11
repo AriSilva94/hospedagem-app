@@ -1,3 +1,7 @@
+"use client";
+
+import { cn } from "@/lib/cn";
+
 type TopBarProps = {
   onOpenMenu: () => void;
 };
@@ -55,9 +59,9 @@ export function TopBar({ onOpenMenu }: TopBarProps) {
   );
 }
 
-function IconButton({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function IconButton({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <button className={`grid h-9 w-9 place-items-center rounded-md text-ink-2 hover:bg-panel hover:text-ink ${className}`}>
+    <button className={cn("grid h-9 w-9 place-items-center rounded-md text-ink-2 hover:bg-panel hover:text-ink", className)}>
       {children}
     </button>
   );
