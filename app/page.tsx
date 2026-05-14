@@ -19,7 +19,7 @@ export default function Home() {
     e.preventDefault();
     setError(null);
     if (email.trim().toLowerCase() === MOCK_EMAIL && password === MOCK_PASSWORD) {
-      router.push("/boas-vindas");
+      router.push("/dashboard");
       return;
     }
     setError("E-mail ou senha incorretos. Tente novamente.");

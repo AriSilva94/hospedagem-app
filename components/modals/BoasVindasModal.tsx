@@ -1,18 +1,74 @@
+// components/modals/BoasVindasModal.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 const TOTAL_STEPS = 5;
 
-export default function BoasVindas() {
-  const router = useRouter();
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  onComplete: () => void;
+};
+
+export function BoasVindasModal({ open, onClose, onComplete }: Props) {
   const [step, setStep] = useState(1);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (open) setStep(1);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    lastFocusedRef.current = document.activeElement as HTMLElement | null;
+    const card = cardRef.current;
+    const first = card?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+    first?.focus();
+    return () => {
+      lastFocusedRef.current?.focus?.();
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const card = cardRef.current;
+      if (!card) return;
+      const focusables = Array.from(
+        card.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      ).filter((el) => !el.hasAttribute("hidden"));
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
 
   function next() {
     if (step >= TOTAL_STEPS) {
-      router.push("/dashboard");
+      onComplete();
       return;
     }
     setStep((s) => s + 1);
@@ -23,8 +79,33 @@ export default function BoasVindas() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg p-3 sm:p-4 lg:p-8">
-      <div className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col overflow-hidden rounded-2xl border border-line bg-bg-card shadow-md sm:rounded-3xl">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Boas-vindas e configuração inicial"
+      className="fixed inset-0 z-50 flex items-stretch justify-center p-3 sm:p-4 lg:p-8"
+    >
+      <button
+        type="button"
+        aria-label="Fechar overlay"
+        tabIndex={-1}
+        className="absolute inset-0 bg-ink/30 backdrop-blur-[2px]"
+        onClick={onClose}
+      />
+
+      <div
+        ref={cardRef}
+        className="relative z-10 mx-auto flex max-h-[95vh] w-full max-w-[95vw] flex-col overflow-hidden rounded-2xl border border-line bg-bg-card shadow-md sm:rounded-3xl lg:max-w-[1240px]"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Fechar"
+          className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-md text-ink-3 hover:bg-panel hover:text-ink"
+        >
+          ✕
+        </button>
+
         {/* Progress */}
         <div className="flex gap-1.5 px-4 pt-3 sm:px-8 sm:pt-4">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => {
@@ -63,7 +144,7 @@ export default function BoasVindas() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-4 sm:px-8 sm:py-5">
           <button
             type="button"
-            onClick={() => router.push("/dashboard")}
+            onClick={onClose}
             className="text-[14px] text-ink-3 hover:text-ink"
           >
             Pular configuração
@@ -300,11 +381,41 @@ function StepProperty() {
   );
 }
 
+const COMODIDADES_ALL = [
+  "Wi-Fi", "Ar-condicionado", "TV", "Cozinha", "Estacionamento",
+  "Piscina", "Varanda", "Espaço de trabalho", "Máquina de lavar", "Aceita pets",
+];
+
 function StepUnits() {
   const tipos = ["Quarto", "Apartamento", "Cobertura", "Loft", "Suíte", "Studio", "Bangalô"];
-  const comodidadesOn = ["Wi-Fi", "Ar-condicionado"];
-  const comodidadesOff = ["TV", "Cozinha", "Estacionamento", "Piscina", "Varanda", "Espaço de trabalho", "Máquina de lavar", "Aceita pets"];
   const [tipo, setTipo] = useState("Suíte");
+  const [nome, setNome] = useState("");
+  const [quantasIguais, setQuantasIguais] = useState("4");
+  const [descricao, setDescricao] = useState("");
+  const [andar, setAndar] = useState("3º");
+  const [capacidade, setCapacidade] = useState("2");
+  const [quartos, setQuartos] = useState("1");
+  const [tamanho, setTamanho] = useState("24");
+  const [comodidades, setComodidades] = useState<Set<string>>(
+    () => new Set(["Wi-Fi", "Ar-condicionado"])
+  );
+
+  function toggleComodidade(c: string) {
+    setComodidades((prev) => {
+      const next = new Set(prev);
+      if (next.has(c)) next.delete(c);
+      else next.add(c);
+      return next;
+    });
+  }
+
+  function clampInt(v: string, min: number, max: number) {
+    const digits = v.replace(/[^\d]/g, "");
+    if (digits === "") return "";
+    const n = Math.min(max, Math.max(min, parseInt(digits, 10)));
+    return String(n);
+  }
+
   const inputCls =
     "h-9 w-full rounded-lg border border-line-strong bg-bg-card px-3 text-[13px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft";
   return (
@@ -340,11 +451,24 @@ function StepUnits() {
       <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-[2fr_1fr]">
         <label className="flex flex-col gap-1">
           <CompactLabel required>Nome</CompactLabel>
-          <input className={inputCls} placeholder="Ex.: Suíte Mar — vista jardim" />
+          <input
+            className={inputCls}
+            placeholder="Ex.: Suíte Mar — vista jardim"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+          />
         </label>
         <label className="flex flex-col gap-1">
           <CompactLabel>Quantas iguais?</CompactLabel>
-          <input className={inputCls} defaultValue="4" />
+          <input
+            className={inputCls}
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={999}
+            value={quantasIguais}
+            onChange={(e) => setQuantasIguais(clampInt(e.target.value, 1, 999))}
+          />
         </label>
       </div>
 
@@ -353,38 +477,82 @@ function StepUnits() {
         <textarea
           rows={2}
           placeholder="O que torna essa unidade especial?"
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
           className="w-full rounded-lg border border-line-strong bg-bg-card px-3 py-2 text-[13px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
         />
       </label>
 
       <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        <label className="flex flex-col gap-1"><CompactLabel>Andar</CompactLabel><input className={inputCls} defaultValue="3º" /></label>
-        <label className="flex flex-col gap-1"><CompactLabel>Capacidade</CompactLabel><input className={inputCls} defaultValue="2" /></label>
-        <label className="flex flex-col gap-1"><CompactLabel>Quartos</CompactLabel><input className={inputCls} defaultValue="1" /></label>
-        <label className="flex flex-col gap-1"><CompactLabel>Tamanho (m²)</CompactLabel><input className={inputCls} defaultValue="24" /></label>
+        <label className="flex flex-col gap-1">
+          <CompactLabel>Andar</CompactLabel>
+          <input
+            className={inputCls}
+            value={andar}
+            onChange={(e) => setAndar(e.target.value.replace(/[^\dºTSstÉéRrCc\s-]/g, "").slice(0, 6))}
+            placeholder="Ex.: 3º, T, S"
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <CompactLabel>Capacidade</CompactLabel>
+          <input
+            className={inputCls}
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={50}
+            value={capacidade}
+            onChange={(e) => setCapacidade(clampInt(e.target.value, 1, 50))}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <CompactLabel>Quartos</CompactLabel>
+          <input
+            className={inputCls}
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={20}
+            value={quartos}
+            onChange={(e) => setQuartos(clampInt(e.target.value, 0, 20))}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <CompactLabel>Tamanho (m²)</CompactLabel>
+          <input
+            className={inputCls}
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={9999}
+            value={tamanho}
+            onChange={(e) => setTamanho(clampInt(e.target.value, 1, 9999))}
+          />
+        </label>
       </div>
 
       <div className="mt-3">
         <CompactLabel>Comodidades</CompactLabel>
         <div className="mt-1.5 flex flex-wrap gap-1.5">
-          {comodidadesOn.map((c) => (
-            <button
-              key={c}
-              type="button"
-              className="h-7 rounded-full border border-ok bg-ok-soft px-2.5 text-[11.5px] font-medium text-ok-ink"
-            >
-              ✓ {c}
-            </button>
-          ))}
-          {comodidadesOff.map((c) => (
-            <button
-              key={c}
-              type="button"
-              className="h-7 rounded-full border border-line-strong bg-bg-card px-2.5 text-[11.5px] font-medium text-ink-2 hover:bg-panel"
-            >
-              + {c}
-            </button>
-          ))}
+          {COMODIDADES_ALL.map((c) => {
+            const on = comodidades.has(c);
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => toggleComodidade(c)}
+                aria-pressed={on}
+                className={cn(
+                  "h-7 rounded-full border px-2.5 text-[11.5px] font-medium transition-colors",
+                  on
+                    ? "border-ok bg-ok-soft text-ok-ink"
+                    : "border-line-strong bg-bg-card text-ink-2 hover:bg-panel"
+                )}
+              >
+                {on ? "✓" : "+"} {c}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -450,19 +618,17 @@ function FieldLabel({
 }
 
 function TextInput(props: {
-  value?: string;
-  defaultValue?: string;
+  value: string;
   placeholder?: string;
   type?: string;
-  onChange?: (v: string) => void;
+  onChange: (v: string) => void;
 }) {
   return (
     <input
       type={props.type ?? "text"}
       value={props.value}
-      defaultValue={props.defaultValue}
       placeholder={props.placeholder}
-      onChange={(e) => props.onChange?.(e.target.value)}
+      onChange={(e) => props.onChange(e.target.value)}
       className="h-11 w-full rounded-xl border border-line-strong bg-bg-card px-4 text-[14px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
     />
   );
