@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const TOTAL_STEPS = 5;
@@ -238,7 +239,7 @@ function StepWelcome() {
         {features.map((f) => (
           <li key={f.title} className="flex items-start gap-3">
             <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent-soft text-accent">
-              <CheckIcon />
+              <Check size={12} strokeWidth={2} aria-hidden />
             </span>
             <div className="flex flex-col">
               <span className="text-[14.5px] font-semibold text-ink">{f.title}</span>
@@ -635,14 +636,6 @@ function TextInput(props: {
 }
 
 /* ---------- Icons / Art ---------- */
-
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
-      <path d="M2.5 6.2 5 8.7l4.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function KeyArt() {
   return (

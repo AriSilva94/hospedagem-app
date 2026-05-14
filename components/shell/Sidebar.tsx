@@ -3,11 +3,12 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Building2, Home } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const items = [
-  { href: "/dashboard", label: "Painel", icon: HomeIcon },
-  { href: "/imoveis", label: "Imóveis", icon: BuildingIcon },
+  { href: "/dashboard", label: "Painel", icon: Home },
+  { href: "/imoveis", label: "Imóveis", icon: Building2 },
 ];
 
 type SidebarProps = {
@@ -78,7 +79,7 @@ export function Sidebar({ mobileNavOpen, onClose }: SidebarProps) {
                   : "text-white/55 hover:bg-white/5 hover:text-white"
               )}
             >
-              <Icon />
+              <Icon size={18} strokeWidth={1.8} />
             </Link>
           );
         })}
@@ -137,7 +138,7 @@ export function Sidebar({ mobileNavOpen, onClose }: SidebarProps) {
                     : "text-white/65 hover:bg-white/5 hover:text-white"
                 )}
               >
-                <Icon />
+                <Icon size={18} strokeWidth={1.8} />
                 {item.label}
               </Link>
             );
@@ -148,17 +149,3 @@ export function Sidebar({ mobileNavOpen, onClose }: SidebarProps) {
   );
 }
 
-function HomeIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-7H10v7H4a1 1 0 0 1-1-1z" />
-    </svg>
-  );
-}
-function BuildingIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="4" y="3" width="16" height="18" rx="1.5" /><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="12" y1="3" x2="12" y2="21" />
-    </svg>
-  );
-}

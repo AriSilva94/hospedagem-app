@@ -39,3 +39,30 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# logs
+*.log
+
+# Claude Code local state
+.claude/
+!.claude/settings.json
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# dev screenshots / scratch assets (root)
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.webp

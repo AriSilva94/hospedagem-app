@@ -1,3 +1,4 @@
+import { AlertCircle, Building2, ChevronRight, MoreHorizontal, Upload } from "lucide-react";
 import { AppShell } from "@/components/shell/AppShell";
 import { cn } from "@/lib/cn";
 
@@ -47,8 +48,8 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <PillButton icon={<DotIcon />}>Hoje</PillButton>
-            <PillButton icon={<BuildingIcon />}>Todos imóveis</PillButton>
-            <PillButton icon={<ExportIcon />}>Exportar</PillButton>
+            <PillButton icon={<Building2 size={14} strokeWidth={1.8} />}>Todos imóveis</PillButton>
+            <PillButton icon={<Upload size={14} strokeWidth={1.8} />}>Exportar</PillButton>
           </div>
         </div>
 
@@ -60,7 +61,7 @@ export default function Dashboard() {
                 <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-ink-3">
                   {s.label}
                 </span>
-                <button className="text-ink-4 hover:text-ink-2"><DotsIcon /></button>
+                <button className="text-ink-4 hover:text-ink-2"><MoreHorizontal size={14} /></button>
               </div>
               <div className="mt-3 font-serif text-4xl tracking-tight text-ink">{s.value}</div>
               <div className="mt-1 text-[12.5px] text-ink-3">{s.hint}</div>
@@ -105,7 +106,7 @@ export default function Dashboard() {
                       {e.status.label}
                     </span>
                   )}
-                  <span className="hidden sm:block"><ChevronRight /></span>
+                  <span className="hidden sm:block text-ink-4"><ChevronRight size={14} strokeWidth={2} /></span>
                 </li>
               ))}
             </ul>
@@ -122,7 +123,7 @@ export default function Dashboard() {
               {alerts.map((a) => (
                 <li key={a.title} className="flex items-start gap-3 px-4 py-3 sm:px-5 sm:py-4">
                   <span className="mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-warn-soft text-warn-ink">
-                    <WarnIcon />
+                    <AlertCircle size={12} strokeWidth={2.2} />
                   </span>
                   <div className="flex min-w-0 flex-1 flex-col">
                     <span className="text-[13.5px] font-semibold text-ink">{a.title}</span>
@@ -169,39 +170,4 @@ function KindBadge({ kind }: { kind: Event["kind"] }) {
 
 function DotIcon() {
   return <span className="h-2 w-2 rounded-full bg-accent" />;
-}
-function BuildingIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <rect x="4" y="3" width="16" height="18" rx="1.5" /><line x1="12" y1="3" x2="12" y2="21" /><line x1="4" y1="9" x2="20" y2="9" />
-    </svg>
-  );
-}
-function ExportIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M12 3v12M7 8l5-5 5 5M5 21h14" />
-    </svg>
-  );
-}
-function DotsIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-      <circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" />
-    </svg>
-  );
-}
-function ChevronRight() {
-  return (
-    <svg className="text-ink-4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="m9 6 6 6-6 6" />
-    </svg>
-  );
-}
-function WarnIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-      <path d="M12 9v4M12 17h.01" /><circle cx="12" cy="12" r="9" />
-    </svg>
-  );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Building2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const TIPOS = [
@@ -132,7 +133,7 @@ export function NovoImovelModal({
         <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-3">
             <span className={cn("grid h-10 w-10 place-items-center rounded-xl", data.cor)}>
-              <BuildingIcon />
+              <Building2 size={20} strokeWidth={1.8} color="white" />
             </span>
             <div className="flex flex-col leading-tight">
               <h2 className="text-[17px] font-semibold text-ink">{headerName}</h2>
@@ -563,13 +564,3 @@ function Input({
   );
 }
 
-function BuildingIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
-      <rect x="4" y="3" width="16" height="18" rx="1.5" />
-      <line x1="12" y1="3" x2="12" y2="21" />
-      <line x1="4" y1="9" x2="20" y2="9" />
-      <line x1="4" y1="15" x2="20" y2="15" />
-    </svg>
-  );
-}

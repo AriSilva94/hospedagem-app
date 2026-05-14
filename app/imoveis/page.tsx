@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Image as ImageIcon, MapPin, Plus } from "lucide-react";
 import { AppShell } from "@/components/shell/AppShell";
 import { NovoImovelModal, type ImovelData } from "@/components/modals/NovoImovelModal";
 
@@ -130,7 +131,7 @@ export default function ImoveisPage() {
             onClick={() => setOpenCreate(true)}
             className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-4 text-[13px] font-medium text-white hover:bg-accent-hover"
           >
-            <PlusIcon /> Novo imóvel
+            <Plus size={14} strokeWidth={2.5} /> Novo imóvel
           </button>
         </div>
 
@@ -149,13 +150,13 @@ export default function ImoveisPage() {
                   </span>
                 )}
                 <span className="grid h-10 w-10 place-items-center rounded-lg bg-bg-card/40 text-white">
-                  <PicIcon />
+                  <ImageIcon size={22} strokeWidth={1.5} opacity={0.7} />
                 </span>
               </div>
               <div className="p-4">
                 <h3 className="text-[15px] font-semibold text-ink">{p.nome}</h3>
                 <p className="mt-0.5 flex items-center gap-1 text-[12.5px] text-ink-3">
-                  <PinIcon /> {p.area}
+                  <MapPin size={12} strokeWidth={1.8} /> {p.area}
                 </p>
                 <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
                   <div>
@@ -188,24 +189,3 @@ export default function ImoveisPage() {
   );
 }
 
-function PlusIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
-function PinIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M12 22s7-7 7-12a7 7 0 1 0-14 0c0 5 7 12 7 12Z" /><circle cx="12" cy="10" r="2.5" />
-    </svg>
-  );
-}
-function PicIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.7">
-      <rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="11" r="1.5" /><path d="m3 17 5-4 4 3 5-5 4 4" />
-    </svg>
-  );
-}

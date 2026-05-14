@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Bell, ChevronDown, LogOut, Menu, Moon, Plus, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 type TopBarProps = {
@@ -9,8 +11,14 @@ type TopBarProps = {
 };
 
 export function TopBar({ onOpenMenu, onOpenOnboarding }: TopBarProps) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  function handleLogout() {
+    setMenuOpen(false);
+    router.push("/");
+  }
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -36,7 +44,7 @@ export function TopBar({ onOpenMenu, onOpenOnboarding }: TopBarProps) {
         aria-label="Abrir menu"
         className="grid h-9 w-9 shrink-0 place-items-center rounded-md text-ink-2 hover:bg-panel hover:text-ink md:hidden"
       >
-        <MenuIcon />
+        <Menu size={18} strokeWidth={2} />
       </button>
 
       <button className="flex min-w-0 items-center gap-2 rounded-full border border-line bg-bg-card py-1.5 pl-1.5 pr-3 text-left text-[13px] hover:bg-panel sm:gap-3">
@@ -47,11 +55,11 @@ export function TopBar({ onOpenMenu, onOpenOnboarding }: TopBarProps) {
           <span className="truncate text-[13px] font-semibold text-ink">Mar & Sal Properties</span>
           <span className="truncate text-[11px] text-ink-3">24 unidades · Florianópolis</span>
         </span>
-        <span className="ml-1 shrink-0 text-ink-3"><ChevronDown /></span>
+        <span className="ml-1 shrink-0 text-ink-3"><ChevronDown size={12} strokeWidth={2} /></span>
       </button>
 
       <div className="relative mx-auto hidden w-full max-w-[480px] lg:block">
-        <SearchIcon />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-4" size={14} strokeWidth={2} />
         <input
           type="text"
           placeholder="Buscar reservas, hóspedes, unidades..."
@@ -66,10 +74,10 @@ export function TopBar({ onOpenMenu, onOpenOnboarding }: TopBarProps) {
         <button className="hidden rounded-md px-2 py-1 text-[12px] font-medium text-ink-2 hover:bg-panel sm:inline-flex">
           PT
         </button>
-        <IconButton className="hidden sm:grid"><MoonIcon /></IconButton>
-        <IconButton><BellIcon /></IconButton>
+        <IconButton className="hidden sm:grid"><Moon size={16} strokeWidth={1.8} /></IconButton>
+        <IconButton><Bell size={16} strokeWidth={1.8} /></IconButton>
         <button className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-3 text-[13px] font-medium text-white hover:bg-accent-hover md:px-4">
-          <PlusIcon />
+          <Plus size={14} strokeWidth={2.5} />
           <span className="hidden md:inline">Nova reserva</span>
         </button>
 
@@ -102,6 +110,16 @@ export function TopBar({ onOpenMenu, onOpenOnboarding }: TopBarProps) {
               >
                 Configuração inicial
               </button>
+              <div role="separator" className="mx-3 h-px bg-line" />
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[13.5px] text-ink hover:bg-panel"
+              >
+                <LogOut size={14} strokeWidth={2} aria-hidden />
+                Sair
+              </button>
             </div>
           )}
         </div>
@@ -118,45 +136,3 @@ function IconButton({ children, className }: { children: React.ReactNode; classN
   );
 }
 
-function MenuIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" />
-    </svg>
-  );
-}
-function ChevronDown() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-function SearchIcon() {
-  return (
-    <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.5" y2="16.5" />
-    </svg>
-  );
-}
-function MoonIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
-    </svg>
-  );
-}
-function BellIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9Z" /><path d="M10 21a2 2 0 0 0 4 0" />
-    </svg>
-  );
-}
-function PlusIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
