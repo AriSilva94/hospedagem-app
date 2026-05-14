@@ -1,12 +1,33 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 type TopBarProps = {
   onOpenMenu: () => void;
+  onOpenOnboarding: () => void;
 };
 
-export function TopBar({ onOpenMenu }: TopBarProps) {
+export function TopBar({ onOpenMenu, onOpenOnboarding }: TopBarProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onDoc(e: MouseEvent) {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b border-line bg-bg px-3 sm:gap-4 sm:px-5">
       <button
@@ -51,8 +72,35 @@ export function TopBar({ onOpenMenu }: TopBarProps) {
           <PlusIcon />
           <span className="hidden md:inline">Nova reserva</span>
         </button>
-        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-ink text-[12px] font-semibold text-white">
-          AO
+
+        <div ref={menuRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-ink text-[12px] font-semibold text-white hover:opacity-90"
+          >
+            AO
+          </button>
+          {menuOpen && (
+            <div
+              role="menu"
+              className="absolute right-0 top-11 z-40 w-56 overflow-hidden rounded-xl border border-line bg-bg-card shadow-lg"
+            >
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onOpenOnboarding();
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[13.5px] text-ink hover:bg-panel"
+              >
+                Configuração inicial
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
