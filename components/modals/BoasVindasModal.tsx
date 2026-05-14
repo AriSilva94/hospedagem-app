@@ -1,10 +1,13 @@
 // components/modals/BoasVindasModal.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 const TOTAL_STEPS = 5;
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 type Props = {
   open: boolean;
@@ -14,6 +17,8 @@ type Props = {
 
 export function BoasVindasModal({ open, onClose, onComplete }: Props) {
   const [step, setStep] = useState(1);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (open) setStep(1);
@@ -21,7 +26,40 @@ export function BoasVindasModal({ open, onClose, onComplete }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    lastFocusedRef.current = document.activeElement as HTMLElement | null;
+    const card = cardRef.current;
+    const first = card?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+    first?.focus();
+    return () => {
+      lastFocusedRef.current?.focus?.();
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const card = cardRef.current;
+      if (!card) return;
+      const focusables = Array.from(
+        card.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      ).filter((el) => !el.hasAttribute("hidden"));
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
@@ -41,15 +79,24 @@ export function BoasVindasModal({ open, onClose, onComplete }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-stretch justify-center p-3 sm:p-4 lg:p-8">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Boas-vindas e configuração inicial"
+      className="fixed inset-0 z-50 flex items-stretch justify-center p-3 sm:p-4 lg:p-8"
+    >
       <button
         type="button"
         aria-label="Fechar overlay"
+        tabIndex={-1}
         className="absolute inset-0 bg-ink/30 backdrop-blur-[2px]"
         onClick={onClose}
       />
 
-      <div className="relative z-10 mx-auto flex max-h-[95vh] w-full max-w-[95vw] flex-col overflow-hidden rounded-2xl border border-line bg-bg-card shadow-md sm:rounded-3xl lg:max-w-[1240px]">
+      <div
+        ref={cardRef}
+        className="relative z-10 mx-auto flex max-h-[95vh] w-full max-w-[95vw] flex-col overflow-hidden rounded-2xl border border-line bg-bg-card shadow-md sm:rounded-3xl lg:max-w-[1240px]"
+      >
         <button
           type="button"
           onClick={onClose}
@@ -571,19 +618,17 @@ function FieldLabel({
 }
 
 function TextInput(props: {
-  value?: string;
-  defaultValue?: string;
+  value: string;
   placeholder?: string;
   type?: string;
-  onChange?: (v: string) => void;
+  onChange: (v: string) => void;
 }) {
   return (
     <input
       type={props.type ?? "text"}
       value={props.value}
-      defaultValue={props.defaultValue}
       placeholder={props.placeholder}
-      onChange={(e) => props.onChange?.(e.target.value)}
+      onChange={(e) => props.onChange(e.target.value)}
       className="h-11 w-full rounded-xl border border-line-strong bg-bg-card px-4 text-[14px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
     />
   );

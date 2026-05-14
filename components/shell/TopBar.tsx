@@ -79,12 +79,15 @@ export function TopBar({ onOpenMenu, onOpenOnboarding }: TopBarProps) {
             onClick={() => setMenuOpen((v) => !v)}
             aria-haspopup="menu"
             aria-expanded={menuOpen}
+            aria-controls="user-menu"
+            aria-label="Menu do usuário"
             className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-ink text-[12px] font-semibold text-white hover:opacity-90"
           >
             AO
           </button>
           {menuOpen && (
             <div
+              id="user-menu"
               role="menu"
               className="absolute right-0 top-11 z-40 w-56 overflow-hidden rounded-xl border border-line bg-bg-card shadow-lg"
             >
