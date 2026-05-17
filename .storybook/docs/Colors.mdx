@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Tokens/Cores" />
+
+# Cores
+
+Tokens declarados em `app/globals.css` (`@theme`). Use classes utilitárias Tailwind (`bg-bg-card`, `text-ink`, `border-line-strong`) ou a variável CSS direta (`var(--color-accent)`).
+
+## Neutras (warm)
+
+<div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+  {[
+    ["bg", "--color-bg"],
+    ["bg-raised", "--color-bg-raised"],
+    ["bg-sunken", "--color-bg-sunken"],
+    ["bg-card", "--color-bg-card"],
+    ["panel", "--color-panel"],
+    ["line-soft", "--color-line-soft"],
+    ["line", "--color-line"],
+    ["line-strong", "--color-line-strong"],
+  ].map(([name, varName]) => (
+    <div key={name} style={{ border: "1px solid var(--color-line)", borderRadius: 8, overflow: "hidden" }}>
+      <div style={{ height: 60, background: `var(${varName})` }} />
+      <div style={{ padding: "8px 10px", fontSize: 12 }}>
+        <div style={{ fontWeight: 600 }}>{name}</div>
+        <code style={{ fontSize: 11, color: "var(--color-ink-3)" }}>{varName}</code>
+      </div>
+    </div>
+  ))}
+</div>
+
+## Ink (texto)
+
+<div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+  {["ink", "ink-2", "ink-3", "ink-4"].map((name) => (
+    <div key={name} style={{ border: "1px solid var(--color-line)", borderRadius: 8, overflow: "hidden" }}>
+      <div style={{ height: 60, background: `var(--color-${name})` }} />
+      <div style={{ padding: "8px 10px", fontSize: 12 }}>
+        <div style={{ fontWeight: 600 }}>{name}</div>
+        <code style={{ fontSize: 11, color: "var(--color-ink-3)" }}>--color-{name}</code>
+      </div>
+    </div>
+  ))}
+</div>
+
+## Status
+
+<div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+  {["accent", "ok", "warn", "err", "slate"].map((name) => (
+    <div key={name} style={{ border: "1px solid var(--color-line)", borderRadius: 8, overflow: "hidden" }}>
+      <div style={{ height: 60, background: `var(--color-${name})` }} />
+      <div style={{ padding: "8px 10px", fontSize: 12 }}>
+        <div style={{ fontWeight: 600 }}>{name}</div>
+        <code style={{ fontSize: 11, color: "var(--color-ink-3)" }}>--color-{name}</code>
+      </div>
+    </div>
+  ))}
+</div>

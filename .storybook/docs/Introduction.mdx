@@ -1,0 +1,43 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Introdução" />
+
+# Aja PMS — Design System
+
+Catálogo de componentes UI do projeto **hospedagem-app**.
+
+## Stack
+
+- **Next.js 16** + **React 19**
+- **Tailwind v4** (tokens via `@theme` em `app/globals.css`)
+- **Headless UI 2** + **lucide-react**
+- TypeScript estrito
+
+## Estrutura
+
+Componentes vivem em [`components/ui/`](../../components/ui). Cada componente tem stories colocalizadas no padrão `*.stories.tsx`.
+
+Tokens de cor, tipografia, raios e espaçamentos são declarados em `app/globals.css` via diretiva `@theme` do Tailwind v4.
+
+## Como adicionar uma story
+
+Crie `components/ui/<componente>.stories.tsx`:
+
+```tsx
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { Button } from "./button";
+
+const meta = {
+  title: "UI/Button",
+  component: Button,
+  parameters: { layout: "centered" },
+  tags: ["autodocs"],
+} satisfies Meta<typeof Button>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: { children: "Confirmar" },
+};
+```

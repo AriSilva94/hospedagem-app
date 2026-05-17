@@ -1,14 +1,39 @@
-// components/modals/BoasVindasModal.tsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Check } from "lucide-react";
+import {
+  Avatar,
+  Button,
+  Chip,
+  Field,
+  Input,
+  Modal,
+  Select,
+  StepBar,
+  Textarea,
+  type SelectOption,
+} from "@/components/ui";
 import { cn } from "@/lib/cn";
 
 const TOTAL_STEPS = 5;
 
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+const IDIOMA_OPTIONS: SelectOption[] = [
+  { value: "pt-BR", label: "Português (BR)" },
+  { value: "en-US", label: "English (US)" },
+  { value: "es", label: "Español" },
+];
+
+const UF_OPTIONS: SelectOption[] = [
+  { value: "SC", label: "SC" },
+  { value: "SP", label: "SP" },
+  { value: "RJ", label: "RJ" },
+];
+
+const PAIS_OPTIONS: SelectOption[] = [
+  { value: "BR", label: "Brasil" },
+  { value: "PT", label: "Portugal" },
+];
 
 type Props = {
   open: boolean;
@@ -18,54 +43,6 @@ type Props = {
 
 export function BoasVindasModal({ open, onClose, onComplete }: Props) {
   const [step, setStep] = useState(1);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const lastFocusedRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (open) setStep(1);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    lastFocusedRef.current = document.activeElement as HTMLElement | null;
-    const card = cardRef.current;
-    const first = card?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
-    first?.focus();
-    return () => {
-      lastFocusedRef.current?.focus?.();
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        onClose();
-        return;
-      }
-      if (e.key !== "Tab") return;
-      const card = cardRef.current;
-      if (!card) return;
-      const focusables = Array.from(
-        card.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
-      ).filter((el) => !el.hasAttribute("hidden"));
-      if (focusables.length === 0) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-      if (e.shiftKey && active === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  if (!open) return null;
 
   function next() {
     if (step >= TOTAL_STEPS) {
@@ -80,152 +57,91 @@ export function BoasVindasModal({ open, onClose, onComplete }: Props) {
   }
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Boas-vindas e configuração inicial"
-      className="fixed inset-0 z-50 flex items-stretch justify-center p-3 sm:p-4 lg:p-8"
+    <Modal
+      open={open}
+      onClose={onClose}
+      ariaLabel="Boas-vindas e configuração inicial"
+      size="xl"
+      className="rounded-2xl sm:rounded-3xl"
     >
       <button
         type="button"
-        aria-label="Fechar overlay"
-        tabIndex={-1}
-        className="absolute inset-0 bg-ink/30 backdrop-blur-[2px]"
         onClick={onClose}
+        aria-label="Fechar"
+        className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-md text-ink-3 hover:bg-panel hover:text-ink"
+      >
+        ✕
+      </button>
+
+      <StepBar
+        total={TOTAL_STEPS}
+        current={step}
+        density="comfortable"
+        className="px-4 pt-3 sm:px-8 sm:pt-4"
       />
 
-      <div
-        ref={cardRef}
-        className="relative z-10 mx-auto flex max-h-[95vh] w-full max-w-[95vw] flex-col overflow-hidden rounded-2xl border border-line bg-bg-card shadow-md sm:rounded-3xl lg:max-w-[1240px]"
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Fechar"
-          className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-md text-ink-3 hover:bg-panel hover:text-ink"
-        >
-          ✕
-        </button>
-
-        {/* Progress */}
-        <div className="flex gap-1.5 px-4 pt-3 sm:px-8 sm:pt-4">
-          {Array.from({ length: TOTAL_STEPS }).map((_, i) => {
-            const idx = i + 1;
-            return (
-              <div
-                key={i}
-                className={cn(
-                  "h-1 flex-1 rounded-full transition-colors",
-                  idx < step && "bg-ink",
-                  idx === step && "bg-accent",
-                  idx > step && "bg-line-soft"
-                )}
-              />
-            );
-          })}
-        </div>
-
-        {/* Content */}
-        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2">
-          <div className="flex flex-col overflow-y-auto px-5 py-8 sm:px-10 sm:py-12 lg:px-16">
-            <div className="my-auto w-full">
-              <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-ink-3">
-                Passo {step} de {TOTAL_STEPS}
-              </span>
-              <StepBody step={step} />
-            </div>
-          </div>
-
-          <div className="relative hidden overflow-hidden bg-accent-soft lg:block">
-            <StepIllustration step={step} />
+      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2">
+        <div className="flex flex-col overflow-y-auto px-5 py-8 sm:px-10 sm:py-12 lg:px-16">
+          <div className="my-auto w-full">
+            <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-ink-3">
+              Passo {step} de {TOTAL_STEPS}
+            </span>
+            <StepBody step={step} />
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-4 sm:px-8 sm:py-5">
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-[14px] text-ink-3 hover:text-ink"
-          >
-            Pular configuração
-          </button>
-
-          <div className="flex items-center gap-4 sm:gap-5">
-            {step > 1 && (
-              <button
-                type="button"
-                onClick={back}
-                className="text-[14px] text-ink-2 hover:text-ink"
-              >
-                ← Voltar
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={next}
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-[14px] font-medium text-white shadow-sm hover:bg-accent-hover sm:px-6 sm:text-[14.5px]"
-            >
-              {step === TOTAL_STEPS ? "Abrir painel" : "Continuar"}{" "}
-              <span aria-hidden>→</span>
-            </button>
-          </div>
+        <div className="relative hidden overflow-hidden bg-accent-soft lg:block">
+          <StepIllustration step={step} />
         </div>
       </div>
-    </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-4 sm:px-8 sm:py-5">
+        <button type="button" onClick={onClose} className="text-[14px] text-ink-3 hover:text-ink">
+          Pular configuração
+        </button>
+        <div className="flex items-center gap-4 sm:gap-5">
+          {step > 1 && (
+            <button type="button" onClick={back} className="text-[14px] text-ink-2 hover:text-ink">
+              ← Voltar
+            </button>
+          )}
+          <Button onClick={next}>
+            {step === TOTAL_STEPS ? "Abrir painel" : "Continuar"}{" "}
+            <span aria-hidden>→</span>
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 }
 
 function StepBody({ step }: { step: number }) {
   switch (step) {
-    case 1:
-      return <StepWelcome />;
-    case 2:
-      return <StepProfile />;
-    case 3:
-      return <StepProperty />;
-    case 4:
-      return <StepUnits />;
-    case 5:
-      return <StepDone />;
-    default:
-      return null;
+    case 1: return <StepWelcome />;
+    case 2: return <StepProfile />;
+    case 3: return <StepProperty />;
+    case 4: return <StepUnits />;
+    case 5: return <StepDone />;
+    default: return null;
   }
 }
 
 function StepIllustration({ step }: { step: number }) {
   switch (step) {
-    case 1:
-      return <KeyArt />;
-    case 2:
-      return <PortraitArt />;
-    case 3:
-      return <HouseArt />;
-    case 4:
-      return <RoomsArt />;
-    case 5:
-      return <SparklesArt />;
-    default:
-      return null;
+    case 1: return <KeyArt />;
+    case 2: return <PortraitArt />;
+    case 3: return <HouseArt />;
+    case 4: return <RoomsArt />;
+    case 5: return <SparklesArt />;
+    default: return null;
   }
 }
 
-/* ---------- Steps ---------- */
-
 function StepWelcome() {
   const features = [
-    {
-      title: "Reservas e calendário unificados",
-      desc: "Tudo que você precisa em um só lugar",
-    },
-    {
-      title: "Equipe de limpeza e manutenção",
-      desc: "Atribua tarefas e acompanhe o progresso",
-    },
-    {
-      title: "Relatórios por imóvel e canal",
-      desc: "Receita, ocupação e tendências",
-    },
+    { title: "Reservas e calendário unificados", desc: "Tudo que você precisa em um só lugar" },
+    { title: "Equipe de limpeza e manutenção", desc: "Atribua tarefas e acompanhe o progresso" },
+    { title: "Relatórios por imóvel e canal", desc: "Receita, ocupação e tendências" },
   ];
   return (
     <>
@@ -266,32 +182,27 @@ function StepProfile() {
       </p>
 
       <div className="mt-8 flex items-center gap-4">
-        <div className="grid h-16 w-16 place-items-center rounded-full bg-accent font-serif text-2xl text-white">
-          M
-        </div>
+        <Avatar tone="accent" size="lg">M</Avatar>
         <a className="text-[14px] font-medium text-accent underline underline-offset-2" href="#">
           Adicionar foto
         </a>
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
-        <FieldLabel label="Nome">
-          <TextInput value={nome} onChange={setNome} />
-        </FieldLabel>
-        <FieldLabel label="E-mail">
-          <TextInput value={email} onChange={setEmail} type="email" />
-        </FieldLabel>
-        <FieldLabel label="Idioma">
-          <select
+        <Field label="Nome">
+          <Input value={nome} onChange={(e) => setNome(e.target.value)} />
+        </Field>
+        <Field label="E-mail">
+          <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </Field>
+        <Field label="Idioma">
+          <Select
+            options={IDIOMA_OPTIONS}
             value={idioma}
-            onChange={(e) => setIdioma(e.target.value)}
-            className="h-11 w-full rounded-xl border border-line-strong bg-bg-card px-4 text-[14px] text-ink outline-none focus:border-accent focus:ring-4 focus:ring-accent-soft"
-          >
-            <option value="pt-BR">Português (BR)</option>
-            <option value="en-US">English (US)</option>
-            <option value="es">Español</option>
-          </select>
-        </FieldLabel>
+            onValueChange={setIdioma}
+            aria-label="Idioma"
+          />
+        </Field>
       </div>
     </>
   );
@@ -313,13 +224,13 @@ function StepProperty() {
       </p>
 
       <div className="mt-6 flex flex-col gap-4">
-        <FieldLabel label="Nome do imóvel" required>
-          <TextInput
+        <Field label="Nome do imóvel" required>
+          <Input
             value={nome}
-            onChange={setNome}
+            onChange={(e) => setNome(e.target.value)}
             placeholder="Ex.: Casa Mar & Sal — Jurerê"
           />
-        </FieldLabel>
+        </Field>
 
         <div>
           <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-3">
@@ -327,51 +238,40 @@ function StepProperty() {
           </span>
           <div className="mt-2 flex flex-wrap gap-2">
             {tipos.map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTipo(t)}
-                className={cn(
-                  "h-9 rounded-full border px-4 text-[13px] font-medium transition-colors",
-                  tipo === t
-                    ? "border-accent bg-accent-soft text-accent-ink"
-                    : "border-line-strong bg-bg-card text-ink-2 hover:bg-panel"
-                )}
-              >
+              <Chip key={t} selected={tipo === t} onClick={() => setTipo(t)}>
                 {t}
-              </button>
+              </Chip>
             ))}
           </div>
         </div>
 
-        <FieldLabel label="Descrição" required>
-          <textarea
+        <Field label="Descrição" required>
+          <Textarea
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             rows={3}
             placeholder="Conte brevemente sobre o imóvel — localização, diferenciais, perfil de hóspedes."
-            className="w-full rounded-xl border border-line-strong bg-bg-card px-4 py-3 text-[14px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
           />
-        </FieldLabel>
+        </Field>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr_1fr]">
-          <FieldLabel label="Cidade" required>
-            <TextInput value={cidade} onChange={setCidade} />
-          </FieldLabel>
-          <FieldLabel label="Estado" required>
-            <select className="h-11 w-full rounded-xl border border-line-strong bg-bg-card px-3 text-[14px] text-ink outline-none focus:border-accent focus:ring-4 focus:ring-accent-soft">
-              <option>UF</option>
-              <option>SC</option>
-              <option>SP</option>
-              <option>RJ</option>
-            </select>
-          </FieldLabel>
-          <FieldLabel label="País" required>
-            <select className="h-11 w-full rounded-xl border border-line-strong bg-bg-card px-3 text-[14px] text-ink outline-none focus:border-accent focus:ring-4 focus:ring-accent-soft">
-              <option>Brasil</option>
-              <option>Portugal</option>
-            </select>
-          </FieldLabel>
+          <Field label="Cidade" required>
+            <Input value={cidade} onChange={(e) => setCidade(e.target.value)} />
+          </Field>
+          <Field label="Estado" required>
+            <Select
+              options={UF_OPTIONS}
+              placeholder="UF"
+              aria-label="Estado (UF)"
+            />
+          </Field>
+          <Field label="País" required>
+            <Select
+              options={PAIS_OPTIONS}
+              defaultValue="BR"
+              aria-label="País"
+            />
+          </Field>
         </div>
 
         <a className="text-[13.5px] font-medium text-accent" href="#">
@@ -403,10 +303,10 @@ function StepUnits() {
 
   function toggleComodidade(c: string) {
     setComodidades((prev) => {
-      const next = new Set(prev);
-      if (next.has(c)) next.delete(c);
-      else next.add(c);
-      return next;
+      const nextSet = new Set(prev);
+      if (nextSet.has(c)) nextSet.delete(c);
+      else nextSet.add(c);
+      return nextSet;
     });
   }
 
@@ -417,52 +317,37 @@ function StepUnits() {
     return String(n);
   }
 
-  const inputCls =
-    "h-9 w-full rounded-lg border border-line-strong bg-bg-card px-3 text-[13px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft";
   return (
     <div className="mt-3 rounded-xl border border-line p-3.5">
       <div className="flex items-center gap-2">
-        <span className="grid h-6 w-6 place-items-center rounded-full bg-accent text-[11.5px] font-semibold text-white">
-          1
-        </span>
+        <Avatar tone="accent" size="sm">1</Avatar>
         <h2 className="font-serif text-[18px] tracking-tight text-ink">Grupo de unidades</h2>
       </div>
 
       <div className="mt-3">
-        <CompactLabel required>Tipo</CompactLabel>
-        <div className="mt-1.5 flex flex-wrap gap-1.5">
-          {tipos.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTipo(t)}
-              className={cn(
-                "h-7 rounded-full border px-3 text-[12px] font-medium",
-                tipo === t
-                  ? "border-accent bg-accent-soft text-accent-ink"
-                  : "border-line-strong bg-bg-card text-ink-2 hover:bg-panel"
-              )}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
+        <Field label="Tipo" required labelSize="sm">
+          <div className="flex flex-wrap gap-1.5">
+            {tipos.map((t) => (
+              <Chip key={t} selected={tipo === t} size="sm" onClick={() => setTipo(t)}>
+                {t}
+              </Chip>
+            ))}
+          </div>
+        </Field>
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-[2fr_1fr]">
-        <label className="flex flex-col gap-1">
-          <CompactLabel required>Nome</CompactLabel>
-          <input
-            className={inputCls}
+        <Field label="Nome" required labelSize="sm">
+          <Input
+            size="sm"
             placeholder="Ex.: Suíte Mar — vista jardim"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
           />
-        </label>
-        <label className="flex flex-col gap-1">
-          <CompactLabel>Quantas iguais?</CompactLabel>
-          <input
-            className={inputCls}
+        </Field>
+        <Field label="Quantas iguais?" labelSize="sm">
+          <Input
+            size="sm"
             type="number"
             inputMode="numeric"
             min={1}
@@ -470,34 +355,34 @@ function StepUnits() {
             value={quantasIguais}
             onChange={(e) => setQuantasIguais(clampInt(e.target.value, 1, 999))}
           />
-        </label>
+        </Field>
       </div>
 
-      <label className="mt-2.5 flex flex-col gap-1">
-        <CompactLabel>Descrição</CompactLabel>
-        <textarea
-          rows={2}
-          placeholder="O que torna essa unidade especial?"
-          value={descricao}
-          onChange={(e) => setDescricao(e.target.value)}
-          className="w-full rounded-lg border border-line-strong bg-bg-card px-3 py-2 text-[13px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
-        />
-      </label>
+      <div className="mt-2.5">
+        <Field label="Descrição" labelSize="sm">
+          <Textarea
+            rows={2}
+            placeholder="O que torna essa unidade especial?"
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+          />
+        </Field>
+      </div>
 
       <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        <label className="flex flex-col gap-1">
-          <CompactLabel>Andar</CompactLabel>
-          <input
-            className={inputCls}
+        <Field label="Andar" labelSize="sm">
+          <Input
+            size="sm"
             value={andar}
-            onChange={(e) => setAndar(e.target.value.replace(/[^\dºTSstÉéRrCc\s-]/g, "").slice(0, 6))}
+            onChange={(e) =>
+              setAndar(e.target.value.replace(/[^\dºTSstÉéRrCc\s-]/g, "").slice(0, 6))
+            }
             placeholder="Ex.: 3º, T, S"
           />
-        </label>
-        <label className="flex flex-col gap-1">
-          <CompactLabel>Capacidade</CompactLabel>
-          <input
-            className={inputCls}
+        </Field>
+        <Field label="Capacidade" labelSize="sm">
+          <Input
+            size="sm"
             type="number"
             inputMode="numeric"
             min={1}
@@ -505,11 +390,10 @@ function StepUnits() {
             value={capacidade}
             onChange={(e) => setCapacidade(clampInt(e.target.value, 1, 50))}
           />
-        </label>
-        <label className="flex flex-col gap-1">
-          <CompactLabel>Quartos</CompactLabel>
-          <input
-            className={inputCls}
+        </Field>
+        <Field label="Quartos" labelSize="sm">
+          <Input
+            size="sm"
             type="number"
             inputMode="numeric"
             min={0}
@@ -517,11 +401,10 @@ function StepUnits() {
             value={quartos}
             onChange={(e) => setQuartos(clampInt(e.target.value, 0, 20))}
           />
-        </label>
-        <label className="flex flex-col gap-1">
-          <CompactLabel>Tamanho (m²)</CompactLabel>
-          <input
-            className={inputCls}
+        </Field>
+        <Field label="Tamanho (m²)" labelSize="sm">
+          <Input
+            size="sm"
             type="number"
             inputMode="numeric"
             min={1}
@@ -529,42 +412,31 @@ function StepUnits() {
             value={tamanho}
             onChange={(e) => setTamanho(clampInt(e.target.value, 1, 9999))}
           />
-        </label>
+        </Field>
       </div>
 
       <div className="mt-3">
-        <CompactLabel>Comodidades</CompactLabel>
+        <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-ink-3">
+          Comodidades
+        </span>
         <div className="mt-1.5 flex flex-wrap gap-1.5">
           {COMODIDADES_ALL.map((c) => {
             const on = comodidades.has(c);
             return (
-              <button
+              <Chip
                 key={c}
-                type="button"
+                selected={on}
+                tone="ok"
+                size="sm"
                 onClick={() => toggleComodidade(c)}
-                aria-pressed={on}
-                className={cn(
-                  "h-7 rounded-full border px-2.5 text-[11.5px] font-medium transition-colors",
-                  on
-                    ? "border-ok bg-ok-soft text-ok-ink"
-                    : "border-line-strong bg-bg-card text-ink-2 hover:bg-panel"
-                )}
               >
                 {on ? "✓" : "+"} {c}
-              </button>
+              </Chip>
             );
           })}
         </div>
       </div>
     </div>
-  );
-}
-
-function CompactLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
-  return (
-    <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-ink-3">
-      {children}{required && <span className="ml-0.5 text-accent">*</span>}
-    </span>
   );
 }
 
@@ -593,49 +465,6 @@ function StepDone() {
     </>
   );
 }
-
-/* ---------- Form atoms ---------- */
-
-function FieldLabel({
-  label,
-  required,
-  hint,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-3">
-        {label} {required && <span className="text-accent">*</span>}
-      </span>
-      {children}
-      {hint && <span className="text-[12px] text-ink-3">{hint}</span>}
-    </label>
-  );
-}
-
-function TextInput(props: {
-  value: string;
-  placeholder?: string;
-  type?: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <input
-      type={props.type ?? "text"}
-      value={props.value}
-      placeholder={props.placeholder}
-      onChange={(e) => props.onChange(e.target.value)}
-      className="h-11 w-full rounded-xl border border-line-strong bg-bg-card px-4 text-[14px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
-    />
-  );
-}
-
-/* ---------- Icons / Art ---------- */
 
 function KeyArt() {
   return (
@@ -735,10 +564,7 @@ function SparklesArt() {
   ];
   return (
     <>
-      <svg
-        className="absolute -top-12 -left-12"
-        width="220" height="220" viewBox="0 0 220 220" aria-hidden
-      >
+      <svg className="absolute -top-12 -left-12" width="220" height="220" viewBox="0 0 220 220" aria-hidden>
         <circle cx="60" cy="60" r="120" fill="oklch(0.82 0.12 35)" opacity="0.6" />
         <circle cx="60" cy="60" r="90" fill="oklch(0.78 0.14 30)" opacity="0.7" />
         <circle cx="60" cy="60" r="60" fill="var(--color-accent)" opacity="0.7" />
@@ -747,7 +573,7 @@ function SparklesArt() {
         {pts.map(([x, y, s], i) => (
           <g key={i} transform={`translate(${x} ${y})`}>
             <path
-              d={`M0 -${s} L${s * 0.25} -${s * 0.25} L${s} 0 L${s * 0.25} ${s * 0.25} L0 ${s} L-${s * 0.25} ${s * 0.25} L-${s} 0 L-${s * 0.25} -${s * 0.25} Z`}
+              d={`M0 -${s} L${s! * 0.25} -${s! * 0.25} L${s} 0 L${s! * 0.25} ${s! * 0.25} L0 ${s} L-${s! * 0.25} ${s! * 0.25} L-${s} 0 L-${s! * 0.25} -${s! * 0.25} Z`}
               fill="currentColor"
             />
           </g>
