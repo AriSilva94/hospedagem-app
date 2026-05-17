@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Image as ImageIcon, MapPin, Plus } from "lucide-react";
 import { AppShell } from "@/components/shell/AppShell";
+import { Badge, Button, Card } from "@/components/ui";
 import { NovoImovelModal, type ImovelData } from "@/components/modals/NovoImovelModal";
 
 type Imovel = ImovelData & {
@@ -127,12 +128,9 @@ export default function ImoveisPage() {
               Imóveis do tenant atual, unidades e regras de estadia.
             </p>
           </div>
-          <button
-            onClick={() => setOpenCreate(true)}
-            className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-4 text-[13px] font-medium text-white hover:bg-accent-hover"
-          >
+          <Button onClick={() => setOpenCreate(true)} size="sm">
             <Plus size={14} strokeWidth={2.5} /> Novo imóvel
-          </button>
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -141,38 +139,40 @@ export default function ImoveisPage() {
               type="button"
               key={p.id}
               onClick={() => setEditing(p)}
-              className="overflow-hidden rounded-2xl border border-line bg-bg-card text-left shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="text-left transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
-              <div className={`relative grid h-[90px] place-items-center sm:h-[110px] ${p.cor}`}>
-                {p.offline && (
-                  <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-bg-card/90 px-2 py-0.5 text-[11px] font-medium text-accent-ink">
-                    <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Fora de operação
+              <Card className="hover:shadow-md">
+                <div className={`relative grid h-[90px] place-items-center sm:h-[110px] ${p.cor}`}>
+                  {p.offline && (
+                    <Badge tone="accent" size="sm" className="absolute left-3 top-3 bg-bg-card/90">
+                      <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Fora de operação
+                    </Badge>
+                  )}
+                  <span className="grid h-10 w-10 place-items-center rounded-lg bg-bg-card/40 text-white">
+                    <ImageIcon size={22} strokeWidth={1.5} opacity={0.7} />
                   </span>
-                )}
-                <span className="grid h-10 w-10 place-items-center rounded-lg bg-bg-card/40 text-white">
-                  <ImageIcon size={22} strokeWidth={1.5} opacity={0.7} />
-                </span>
-              </div>
-              <div className="p-4">
-                <h3 className="text-[15px] font-semibold text-ink">{p.nome}</h3>
-                <p className="mt-0.5 flex items-center gap-1 text-[12.5px] text-ink-3">
-                  <MapPin size={12} strokeWidth={1.8} /> {p.area}
-                </p>
-                <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
-                  <div>
-                    <div className="font-serif text-xl text-ink">{p.units}</div>
-                    <div className="text-[11px] uppercase tracking-wider text-ink-3">
-                      unidades ativas
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-serif text-xl text-ink">{p.occ}</div>
-                    <div className="text-[11px] uppercase tracking-wider text-ink-3">
-                      ocupadas hoje
-                    </div>
-                  </div>
                 </div>
-              </div>
+                <Card.Body padding="md">
+                  <h3 className="text-[15px] font-semibold text-ink">{p.nome}</h3>
+                  <p className="mt-0.5 flex items-center gap-1 text-[12.5px] text-ink-3">
+                    <MapPin size={12} strokeWidth={1.8} /> {p.area}
+                  </p>
+                  <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
+                    <div>
+                      <div className="font-serif text-xl text-ink">{p.units}</div>
+                      <div className="text-[11px] uppercase tracking-wider text-ink-3">
+                        unidades ativas
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-serif text-xl text-ink">{p.occ}</div>
+                      <div className="text-[11px] uppercase tracking-wider text-ink-3">
+                        ocupadas hoje
+                      </div>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
             </button>
           ))}
         </div>
@@ -188,4 +188,3 @@ export default function ImoveisPage() {
     </AppShell>
   );
 }
-

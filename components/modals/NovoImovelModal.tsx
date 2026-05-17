@@ -2,7 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { Building2 } from "lucide-react";
-import { cn } from "@/lib/cn";
+import {
+  Avatar,
+  Button,
+  Field,
+  Input,
+  Modal,
+  RadioCard,
+  Select,
+  StepBar,
+  Textarea,
+  type SelectOption,
+} from "@/components/ui";
+
+let _unitIdCounter = 0;
+function nextUnitId() {
+  _unitIdCounter += 1;
+  return `unit-${_unitIdCounter}`;
+}
 
 const TIPOS = [
   { id: "edificio", title: "Edifício / Condomínio", desc: "Várias unidades em um prédio" },
@@ -18,6 +35,11 @@ const COVER_COLORS = [
 ];
 
 const UNIT_TIPOS = ["Apartamento", "Suíte", "Studio", "Loft", "Quarto", "Cobertura", "Bangalô"];
+
+const UNIT_TIPO_OPTIONS: SelectOption[] = UNIT_TIPOS.map((t) => ({
+  value: t,
+  label: t,
+}));
 
 export type ImovelData = {
   id?: string;
@@ -35,6 +57,7 @@ export type ImovelData = {
 };
 
 export type UnitType = {
+  id: string;
   nome: string;
   tipo: string;
   quantidade: number;
@@ -60,6 +83,14 @@ const EMPTY: ImovelData = {
   longitude: "",
 };
 
+type CoverTone =
+  | "capa-1" | "capa-2" | "capa-3" | "capa-4" | "capa-5"
+  | "capa-6" | "capa-7" | "capa-8" | "capa-9";
+
+function coverToTone(cor: string): CoverTone {
+  return cor.replace("bg-", "") as CoverTone;
+}
+
 export function NovoImovelModal({
   open,
   onClose,
@@ -75,6 +106,7 @@ export function NovoImovelModal({
   const [data, setData] = useState<ImovelData>(initialData ?? EMPTY);
   const [units, setUnits] = useState<UnitType[]>([
     {
+      id: nextUnitId(),
       nome: "Apto Standard",
       tipo: "Apartamento",
       quantidade: 1,
@@ -94,15 +126,6 @@ export function NovoImovelModal({
     }
   }, [open, initialData]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  if (!open) return null;
-
   function set<K extends keyof ImovelData>(key: K, value: ImovelData[K]) {
     setData((d) => ({ ...d, [key]: value }));
   }
@@ -117,99 +140,7 @@ export function NovoImovelModal({
 
   const stepTitle =
     step === 1 ? "Identificação" : step === 2 ? "Endereço" : "Unidades";
-
   const headerName = data.nome.trim() || (mode === "edit" ? "Imóvel" : "Novo imóvel");
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-      <button
-        type="button"
-        aria-label="Fechar overlay"
-        className="absolute inset-0 bg-ink/30 backdrop-blur-[2px]"
-        onClick={onClose}
-      />
-
-      <div className="relative z-10 flex max-h-[95vh] w-full max-w-[95vw] flex-col overflow-hidden rounded-2xl bg-bg-card shadow-lg sm:max-h-[90vh] sm:max-w-[620px]">
-        <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3 sm:px-6 sm:py-4">
-          <div className="flex items-center gap-3">
-            <span className={cn("grid h-10 w-10 place-items-center rounded-xl", data.cor)}>
-              <Building2 size={20} strokeWidth={1.8} color="white" />
-            </span>
-            <div className="flex flex-col leading-tight">
-              <h2 className="text-[17px] font-semibold text-ink">{headerName}</h2>
-              <p className="text-[12px] text-ink-3">
-                Etapa {step} de 3 · {stepTitle}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="grid h-8 w-8 place-items-center rounded-md text-ink-3 hover:bg-panel hover:text-ink"
-            aria-label="Fechar"
-          >
-            ✕
-          </button>
-        </header>
-
-        <StepBar step={step} />
-
-        <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
-          {step === 1 && <StepIdentificacao data={data} set={set} />}
-          {step === 2 && <StepEndereco data={data} set={set} />}
-          {step === 3 && (
-            <StepUnidades
-              units={units}
-              setUnits={setUnits}
-            />
-          )}
-        </div>
-
-        <Footer
-          step={step}
-          units={units}
-          onCancel={onClose}
-          onBack={() => setStep((s) => s - 1)}
-          onNext={next}
-          mode={mode}
-        />
-      </div>
-    </div>
-  );
-}
-
-function StepBar({ step }: { step: number }) {
-  return (
-    <div className="flex gap-1 px-4 pt-3 sm:px-6">
-      {[1, 2, 3].map((i) => (
-        <span
-          key={i}
-          className={cn(
-            "h-[3px] flex-1 rounded-full",
-            i < step && "bg-ink",
-            i === step && "bg-accent",
-            i > step && "bg-line-soft"
-          )}
-        />
-      ))}
-    </div>
-  );
-}
-
-function Footer({
-  step,
-  units,
-  onCancel,
-  onBack,
-  onNext,
-  mode,
-}: {
-  step: number;
-  units: UnitType[];
-  onCancel: () => void;
-  onBack: () => void;
-  onNext: () => void;
-  mode: "create" | "edit";
-}) {
   const totalUnits = units.reduce((s, u) => s + u.quantidade, 0);
   const hint =
     step === 1
@@ -217,7 +148,6 @@ function Footer({
       : step === 2
         ? "Coordenadas são opcionais"
         : `${totalUnits} unidade${totalUnits === 1 ? "" : "s"} em ${units.length} tipo${units.length === 1 ? "" : "s"}`;
-
   const primaryLabel =
     step === 3
       ? mode === "edit"
@@ -226,35 +156,52 @@ function Footer({
       : "Continuar ›";
 
   return (
-    <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-4 py-3 sm:px-6">
-      <span className="hidden text-[12px] text-ink-3 sm:inline">{hint}</span>
-      <div className="ml-auto flex items-center gap-2">
-        {step > 1 && (
-          <button
-            onClick={onBack}
-            className="inline-flex h-9 items-center rounded-full px-3 text-[13px] font-medium text-ink-2 hover:bg-panel sm:px-4"
+    <Modal
+      open={open}
+      onClose={onClose}
+      ariaLabel={mode === "edit" ? "Editar imóvel" : "Novo imóvel"}
+      size="lg"
+    >
+      <Modal.Header
+        title={headerName}
+        subtitle={`Etapa ${step} de 3 · ${stepTitle}`}
+        leading={
+          <Avatar tone={coverToTone(data.cor)} shape="rounded">
+            <Building2 size={20} strokeWidth={1.8} />
+          </Avatar>
+        }
+        onClose={onClose}
+      />
+      <StepBar total={3} current={step} density="compact" className="px-4 pt-3 sm:px-6" />
+      <Modal.Body>
+        {step === 1 && <StepIdentificacao data={data} set={set} />}
+        {step === 2 && <StepEndereco data={data} set={set} />}
+        {step === 3 && <StepUnidades units={units} setUnits={setUnits} />}
+      </Modal.Body>
+      <Modal.Footer>
+        <span className="hidden text-[12px] text-ink-3 sm:inline">{hint}</span>
+        <div className="ml-auto flex items-center gap-2">
+          {step > 1 && (
+            <Button variant="ghost" size="sm" onClick={() => setStep((s) => s - 1)}>
+              Voltar
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onClose}
+            className="hidden sm:inline-flex"
           >
-            Voltar
-          </button>
-        )}
-        <button
-          onClick={onCancel}
-          className="hidden h-9 items-center rounded-full border border-line-strong bg-bg-card px-4 text-[13px] font-medium text-ink hover:bg-panel sm:inline-flex"
-        >
-          Cancelar
-        </button>
-        <button
-          onClick={onNext}
-          className="inline-flex h-9 items-center gap-2 rounded-full bg-accent px-4 text-[13px] font-medium text-white hover:bg-accent-hover sm:px-5"
-        >
-          {primaryLabel}
-        </button>
-      </div>
-    </footer>
+            Cancelar
+          </Button>
+          <Button size="sm" onClick={next}>
+            {primaryLabel}
+          </Button>
+        </div>
+      </Modal.Footer>
+    </Modal>
   );
 }
-
-/* ---------- Step 1: Identificação ---------- */
 
 function StepIdentificacao({
   data,
@@ -265,74 +212,57 @@ function StepIdentificacao({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <Field label="Nome do imóvel" required>
-        <input
-          type="text"
+      <Field label="Nome do imóvel" required hint="Como aparece para a equipe e no portal do hóspede.">
+        <Input
           value={data.nome}
           onChange={(e) => set("nome", e.target.value)}
           placeholder="Ex.: Villa Jurerê 12"
-          className="h-11 w-full rounded-xl border border-accent bg-bg-card px-4 text-[14px] text-ink outline-none ring-4 ring-accent-soft placeholder:text-ink-4"
+          className="border-accent ring-4 ring-accent-soft"
         />
-        <Hint>Como aparece para a equipe e no portal do hóspede.</Hint>
       </Field>
 
       <div>
-        <Label required>Tipo do imóvel</Label>
+        <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-3">
+          Tipo do imóvel <span className="text-accent">*</span>
+        </span>
         <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {TIPOS.map((t) => (
-            <button
+            <RadioCard
               key={t.id}
-              type="button"
+              selected={data.tipo === t.id}
               onClick={() => set("tipo", t.id)}
-              className={cn(
-                "flex items-start gap-2 rounded-xl border p-3 text-left transition-colors",
-                data.tipo === t.id
-                  ? "border-accent bg-accent-soft"
-                  : "border-line-strong bg-bg-card hover:bg-panel"
-              )}
-            >
-              <span
-                className={cn(
-                  "mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full border",
-                  data.tipo === t.id ? "border-accent" : "border-line-strong"
-                )}
-              >
-                {data.tipo === t.id && <span className="h-2 w-2 rounded-full bg-accent" />}
-              </span>
-              <div className="flex flex-col leading-tight">
-                <span className="text-[13px] font-semibold text-ink">{t.title}</span>
-                <span className="text-[12px] text-ink-3">{t.desc}</span>
-              </div>
-            </button>
+              title={t.title}
+              description={t.desc}
+            />
           ))}
         </div>
       </div>
 
-      <Field label="Descrição" required>
-        <textarea
+      <Field
+        label="Descrição"
+        required
+        hint={`Mínimo 10 caracteres · ${data.descricao.length}/500`}
+      >
+        <Textarea
           rows={3}
           value={data.descricao}
           onChange={(e) => set("descricao", e.target.value)}
           placeholder="Conte sobre o imóvel — diferenciais, vista, localização, perfil de hóspede..."
-          className="w-full rounded-xl border border-line-strong bg-bg-card px-4 py-3 text-[14px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
         />
-        <Hint>Mínimo 10 caracteres · {data.descricao.length}/500</Hint>
       </Field>
 
       <div>
-        <Label>Cor de capa</Label>
+        <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-3">
+          Cor de capa
+        </span>
         <div className="mt-2 flex flex-wrap gap-2">
           {COVER_COLORS.map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => set("cor", c)}
-              className={cn(
-                "h-8 w-8 rounded-lg ring-offset-2 transition-shadow",
-                c,
-                c === data.cor && "ring-2 ring-accent"
-              )}
               aria-label={`cor ${c}`}
+              className={`h-8 w-8 rounded-lg ring-offset-2 transition-shadow ${c} ${c === data.cor ? "ring-2 ring-accent" : ""}`}
             />
           ))}
         </div>
@@ -343,8 +273,6 @@ function StepIdentificacao({
     </div>
   );
 }
-
-/* ---------- Step 2: Endereço ---------- */
 
 function StepEndereco({
   data,
@@ -357,8 +285,9 @@ function StepEndereco({
     <div className="flex flex-col gap-4">
       <Field label="Endereço" required>
         <Input
+          size="sm"
           value={data.endereco ?? ""}
-          onChange={(v) => set("endereco", v)}
+          onChange={(e) => set("endereco", e.target.value)}
           placeholder="Rua, número e complemento"
         />
       </Field>
@@ -366,19 +295,39 @@ function StepEndereco({
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1.6fr_1fr_1fr]">
         <div className="col-span-2 sm:col-span-1">
           <Field label="Cidade" required>
-            <Input value={data.cidade ?? ""} onChange={(v) => set("cidade", v)} placeholder="Florianópolis" />
+            <Input
+              size="sm"
+              value={data.cidade ?? ""}
+              onChange={(e) => set("cidade", e.target.value)}
+              placeholder="Florianópolis"
+            />
           </Field>
         </div>
         <Field label="Estado / UF" required>
-          <Input value={data.uf ?? ""} onChange={(v) => set("uf", v)} placeholder="SC" />
+          <Input
+            size="sm"
+            value={data.uf ?? ""}
+            onChange={(e) => set("uf", e.target.value)}
+            placeholder="SC"
+          />
         </Field>
         <Field label="CEP" required>
-          <Input value={data.cep ?? ""} onChange={(v) => set("cep", v)} placeholder="00000-000" />
+          <Input
+            size="sm"
+            value={data.cep ?? ""}
+            onChange={(e) => set("cep", e.target.value)}
+            placeholder="00000-000"
+          />
         </Field>
       </div>
 
       <Field label="País" required>
-        <Input value={data.pais ?? ""} onChange={(v) => set("pais", v)} placeholder="Brasil" />
+        <Input
+          size="sm"
+          value={data.pais ?? ""}
+          onChange={(e) => set("pais", e.target.value)}
+          placeholder="Brasil"
+        />
       </Field>
 
       <div className="pt-2">
@@ -388,18 +337,26 @@ function StepEndereco({
         </div>
         <div className="mt-2 grid grid-cols-2 gap-3">
           <Field label="Latitude">
-            <Input value={data.latitude ?? ""} onChange={(v) => set("latitude", v)} placeholder="-27.4376" />
+            <Input
+              size="sm"
+              value={data.latitude ?? ""}
+              onChange={(e) => set("latitude", e.target.value)}
+              placeholder="-27.4376"
+            />
           </Field>
           <Field label="Longitude">
-            <Input value={data.longitude ?? ""} onChange={(v) => set("longitude", v)} placeholder="-48.4279" />
+            <Input
+              size="sm"
+              value={data.longitude ?? ""}
+              onChange={(e) => set("longitude", e.target.value)}
+              placeholder="-48.4279"
+            />
           </Field>
         </div>
       </div>
     </div>
   );
 }
-
-/* ---------- Step 3: Unidades ---------- */
 
 function StepUnidades({
   units,
@@ -418,6 +375,7 @@ function StepUnidades({
     setUnits((arr) => [
       ...arr,
       {
+        id: nextUnitId(),
         nome: "",
         tipo: "Apartamento",
         quantidade: 1,
@@ -441,67 +399,73 @@ function StepUnidades({
             tipo. Total: <span className="font-medium text-ink-2">{total} unidade{total === 1 ? "" : "s"}</span>.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={addType}
-          className="inline-flex h-9 shrink-0 items-center gap-1 rounded-full border border-line-strong bg-bg-card px-3 text-[12.5px] font-medium text-ink hover:bg-panel"
-        >
+        <Button variant="outline" size="sm" onClick={addType}>
           + Adicionar tipo
-        </button>
+        </Button>
       </div>
 
       <ul className="flex flex-col gap-3">
         {units.map((u, i) => (
-          <li
-            key={i}
-            className="relative rounded-xl border border-line-strong bg-bg-card p-4"
-          >
+          <li key={u.id} className="relative rounded-xl border border-line-strong bg-bg-card p-4">
             <span className="absolute -left-1 top-3 inline-flex h-6 w-8 items-center justify-center rounded-md bg-accent text-[11px] font-semibold text-white sm:-left-2">
               +{u.quantidade}
             </span>
 
             <div className="grid grid-cols-1 gap-3 pl-4 sm:grid-cols-[1.6fr_1fr_0.8fr] sm:pl-6">
               <Field label="Nome do tipo" required>
-                <Input value={u.nome} onChange={(v) => update(i, { nome: v })} placeholder="Apto Standard" />
+                <Input
+                  size="sm"
+                  value={u.nome}
+                  onChange={(e) => update(i, { nome: e.target.value })}
+                  placeholder="Apto Standard"
+                />
               </Field>
               <Field label="Tipo" required>
-                <select
+                <Select
+                  size="sm"
+                  options={UNIT_TIPO_OPTIONS}
                   value={u.tipo}
-                  onChange={(e) => update(i, { tipo: e.target.value })}
-                  className="h-10 w-full rounded-lg border border-line-strong bg-bg-card px-3 text-[13.5px] text-ink outline-none focus:border-accent focus:ring-4 focus:ring-accent-soft"
-                >
-                  {UNIT_TIPOS.map((t) => (
-                    <option key={t}>{t}</option>
-                  ))}
-                </select>
+                  onValueChange={(v) => update(i, { tipo: v })}
+                  aria-label="Tipo de unidade"
+                />
               </Field>
               <Field label="Quantidade" required>
                 <Input
+                  size="sm"
                   type="number"
                   value={String(u.quantidade)}
-                  onChange={(v) => update(i, { quantidade: Number(v) || 0 })}
+                  onChange={(e) => update(i, { quantidade: Number(e.target.value) || 0 })}
                 />
               </Field>
             </div>
 
             <div className="mt-3 pl-4 sm:pl-6">
               <Field label="Descrição" required>
-                <textarea
+                <Textarea
                   value={u.descricao}
                   onChange={(e) => update(i, { descricao: e.target.value })}
                   rows={2}
                   placeholder="Características compartilhadas por todas as unidades deste tipo..."
-                  className="w-full rounded-lg border border-line-strong bg-bg-card px-3 py-2 text-[13.5px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
                 />
               </Field>
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-2 pl-4 sm:grid-cols-3 sm:pl-6 lg:grid-cols-5">
-              <Field label="Andar"><Input value={u.andar} onChange={(v) => update(i, { andar: v })} /></Field>
-              <Field label="Quartos" required><Input type="number" value={String(u.quartos)} onChange={(v) => update(i, { quartos: Number(v) || 0 })} /></Field>
-              <Field label="Capacidade" required><Input type="number" value={String(u.capacidade)} onChange={(v) => update(i, { capacidade: Number(v) || 0 })} /></Field>
-              <Field label="m²" required><Input type="number" value={String(u.area)} onChange={(v) => update(i, { area: Number(v) || 0 })} /></Field>
-              <Field label="Diária R$" required><Input type="number" value={String(u.diaria)} onChange={(v) => update(i, { diaria: Number(v) || 0 })} /></Field>
+              <Field label="Andar">
+                <Input size="sm" value={u.andar} onChange={(e) => update(i, { andar: e.target.value })} />
+              </Field>
+              <Field label="Quartos" required>
+                <Input size="sm" type="number" value={String(u.quartos)} onChange={(e) => update(i, { quartos: Number(e.target.value) || 0 })} />
+              </Field>
+              <Field label="Capacidade" required>
+                <Input size="sm" type="number" value={String(u.capacidade)} onChange={(e) => update(i, { capacidade: Number(e.target.value) || 0 })} />
+              </Field>
+              <Field label="m²" required>
+                <Input size="sm" type="number" value={String(u.area)} onChange={(e) => update(i, { area: Number(e.target.value) || 0 })} />
+              </Field>
+              <Field label="Diária R$" required>
+                <Input size="sm" type="number" value={String(u.diaria)} onChange={(e) => update(i, { diaria: Number(e.target.value) || 0 })} />
+              </Field>
             </div>
           </li>
         ))}
@@ -509,58 +473,3 @@ function StepUnidades({
     </div>
   );
 }
-
-/* ---------- Atoms ---------- */
-
-function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
-  return (
-    <span className="whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.10em] text-ink-3">
-      {children}
-      {required && <span className="ml-0.5 text-accent">*</span>}
-    </span>
-  );
-}
-
-function Field({
-  label,
-  required,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <Label required={required}>{label}</Label>
-      {children}
-    </label>
-  );
-}
-
-function Hint({ children }: { children: React.ReactNode }) {
-  return <span className="text-[12px] text-ink-3">{children}</span>;
-}
-
-function Input({
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  type?: string;
-}) {
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="h-10 w-full rounded-lg border border-line-strong bg-bg-card px-3 text-[13.5px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
-    />
-  );
-}
-

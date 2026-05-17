@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Chip, Field, Input, Stat } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
 const MOCK_EMAIL = "teste@teste.com.br";
@@ -30,7 +31,6 @@ export default function Home() {
       <Header />
 
       <main className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-8 px-4 py-10 sm:gap-12 sm:px-6 sm:py-16 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-10 lg:py-24">
-        {/* Hero */}
         <section className="flex flex-col justify-center">
           <div className="flex items-center gap-3">
             <span className="h-px w-8 bg-ink" />
@@ -50,34 +50,50 @@ export default function Home() {
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-4 sm:mt-8 sm:gap-5">
-            <button className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-6 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-accent-hover">
+            <Button size="lg">
               Comece grátis <span aria-hidden>→</span>
-            </button>
-            <button className="inline-flex items-center gap-2 text-[15px] font-medium text-ink hover:text-accent">
+            </Button>
+            <Button variant="ghost" size="md" className="text-ink hover:text-accent hover:bg-transparent">
               Ver demonstração <span aria-hidden>▸</span>
-            </button>
+            </Button>
           </div>
 
           <div className="mt-10 h-px w-full max-w-xl bg-line" />
 
           <dl className="mt-8 flex flex-wrap gap-6 sm:gap-10">
-            <Stat value="2.400+" label="imóveis ativos" />
-            <Stat value="38%" label="de ocupação extra" />
-            <Stat value="7 dias" label="para sair do papel" />
+            <Stat value="2.400+" label="imóveis ativos" valueTone="accent" valueSize="lg" layout="value-top" />
+            <Stat value="38%" label="de ocupação extra" valueTone="accent" valueSize="lg" layout="value-top" />
+            <Stat value="7 dias" label="para sair do papel" valueTone="accent" valueSize="lg" layout="value-top" />
           </dl>
         </section>
 
-        {/* Auth card */}
         <section className="flex items-start justify-center lg:justify-end">
           <div className="w-full max-w-md rounded-2xl border border-line bg-bg-card p-5 shadow-lg sm:rounded-3xl sm:p-7">
-            {/* Tabs */}
             <div className="flex rounded-full bg-accent-soft p-1">
-              <TabButton active={tab === "signup"} onClick={() => setTab("signup")}>
+              <Chip
+                selected={tab === "signup"}
+                onClick={() => setTab("signup")}
+                className={cn(
+                  "flex-1 justify-center rounded-full border-0",
+                  tab === "signup"
+                    ? "bg-bg-card text-ink shadow-sm ring-1 ring-line"
+                    : "bg-transparent text-ink-3 hover:bg-transparent hover:text-ink"
+                )}
+              >
                 Criar conta
-              </TabButton>
-              <TabButton active={tab === "signin"} onClick={() => setTab("signin")}>
+              </Chip>
+              <Chip
+                selected={tab === "signin"}
+                onClick={() => setTab("signin")}
+                className={cn(
+                  "flex-1 justify-center rounded-full border-0",
+                  tab === "signin"
+                    ? "bg-bg-card text-ink shadow-sm ring-1 ring-line"
+                    : "bg-transparent text-ink-3 hover:bg-transparent hover:text-ink"
+                )}
+              >
                 Entrar
-              </TabButton>
+              </Chip>
             </div>
 
             <h2 className="mt-6 font-serif text-[26px] leading-tight text-ink">
@@ -89,29 +105,30 @@ export default function Home() {
 
             <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
               <Field label="E-mail profissional">
-                <input
+                <Input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="voce@suacasa.com.br"
-                  className="h-11 w-full rounded-xl border border-line-strong bg-bg-card px-4 text-[14px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
                 />
               </Field>
 
               <Field label={tab === "signup" ? "Crie uma senha" : "Senha"}>
                 <div className="relative">
-                  <input
+                  <Input
                     type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Mínimo 8 caracteres"
-                    className="h-11 w-full rounded-xl border border-line-strong bg-bg-card px-4 pr-20 text-[14px] text-ink outline-none placeholder:text-ink-4 focus:border-accent focus:ring-4 focus:ring-accent-soft"
+                    className="pr-20"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    aria-pressed={showPassword}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] font-medium text-ink-2 hover:text-accent"
                   >
                     {showPassword ? "Ocultar" : "Mostrar"}
@@ -128,13 +145,10 @@ export default function Home() {
                 </div>
               )}
 
-              <button
-                type="submit"
-                className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-accent-hover"
-              >
+              <Button type="submit" size="lg" className="mt-2">
                 {tab === "signup" ? "Criar minha conta" : "Entrar"}{" "}
                 <span aria-hidden>→</span>
-              </button>
+              </Button>
             </form>
 
             <div className="my-5 flex items-center gap-3 text-[11px] font-medium uppercase tracking-widest text-ink-3">
@@ -144,14 +158,14 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col gap-3">
-              <button className="inline-flex h-12 items-center justify-center gap-3 rounded-full border border-line-strong bg-bg-card text-[14px] font-medium text-ink hover:bg-panel">
+              <Button variant="outline" size="lg">
                 <GoogleIcon />
                 Continuar com Google
-              </button>
-              <button className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-line-strong bg-bg-card text-[14px] font-medium text-ink hover:bg-panel">
+              </Button>
+              <Button variant="outline" size="lg">
                 <span aria-hidden className="text-accent">✦</span>
                 Receber link mágico por e-mail
-              </button>
+              </Button>
             </div>
 
             <p className="mt-5 text-center text-[12px] leading-relaxed text-ink-3">
@@ -189,55 +203,10 @@ function Header() {
         <a href="#" className="hover:text-ink">Contato</a>
       </nav>
 
-      <button className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-4 text-[13px] font-medium text-bg-card hover:bg-ink-2 sm:px-5 sm:text-[14px]">
+      <Button size="sm" className="bg-ink text-bg-card hover:bg-ink-2">
         Entrar <span aria-hidden>→</span>
-      </button>
+      </Button>
     </header>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="flex flex-col">
-      <span className="font-serif text-[26px] leading-none text-accent sm:text-[30px]">{value}</span>
-      <span className="mt-2 text-[13px] text-ink-3">{label}</span>
-    </div>
-  );
-}
-
-function TabButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "flex-1 rounded-full px-4 py-2.5 text-[14px] font-medium transition-colors",
-        active
-          ? "bg-bg-card text-ink shadow-sm ring-1 ring-line"
-          : "text-ink-3 hover:text-ink"
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-3">
-        {label}
-      </span>
-      {children}
-    </label>
   );
 }
 
