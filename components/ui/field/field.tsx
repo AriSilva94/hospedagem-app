@@ -1,5 +1,5 @@
 import { Children, cloneElement, isValidElement, useId } from "react";
-import { Label } from "./label";
+import { Label } from "../label";
 import { cn } from "@/lib/cn";
 
 type FieldProps = {

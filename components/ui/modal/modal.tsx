@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { IconButton } from "./icon-button";
+import { IconButton } from "../icon-button";
 import { cn } from "@/lib/cn";
 
 const FOCUSABLE_SELECTOR =
